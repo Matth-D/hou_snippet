@@ -31,8 +31,8 @@ request.add_header("Authorization", "Basic {0}".format(b64str))
 request2 = urllib2.Request(gh_api_url + "/users/houdini-snippet/gists")
 response = urllib2.urlopen(request)
 response2 = urllib2.urlopen(request2)
-
-print response2.read()
+response2_json = json.loads(response2.read())
+print response2_json
 
 # password_mngr.add_password(None,)
 
