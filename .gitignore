@@ -114,7 +114,7 @@ tempCodeRunnerFile.py
 
 
 #project specific
-test_folder
+tests*
 testing
 deleting_folder
 *.DS_Store
