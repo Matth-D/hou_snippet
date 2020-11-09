@@ -12,7 +12,7 @@ def format_gist(description, public, file_name, content):
         content (str): Gist content.
 
     Returns:
-        [str]: JSON formatted str from inputs.
+        str: JSON formatted str from inputs.
     """
 
     keys = ["description", "public", "files"]
@@ -25,9 +25,27 @@ def format_gist(description, public, file_name, content):
     return json_output
 
 
-def encode_zlib_b64(str):
-    return str.encode("zlib").encode("base64")
+def encode_zlib_b64(input_string):
+    """Return encoded input str with zlib then base64.
+
+    Args:
+        input_string (str): String to be encoded.
+
+    Returns:
+        str: Encoded string.
+    """
+
+    return input_string.encode("zlib").encode("base64")
 
 
-def decode_zlib_b64(str):
-    return str.decode("base64").decode("zlib")
+def decode_zlib_b64(input_string):
+    """Return decoded input string with base64 then zlib.
+
+    Args:
+        input_string (str): String to be decoded.
+
+    Returns:
+        str: Decoded string.
+    """
+
+    return input_string.decode("base64").decode("zlib")
