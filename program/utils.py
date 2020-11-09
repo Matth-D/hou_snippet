@@ -23,3 +23,11 @@ def format_gist(description, public, file_name, content):
     json_output = json.dumps(dict_structure, indent=2, default=str)
 
     return json_output
+
+
+def encode_zlib_b64(str):
+    return str.encode("zlib").encode("base64")
+
+
+def decode_zlib_b64(str):
+    return str.decode("base64").decode("zlib")
