@@ -28,3 +28,7 @@ loadItems = os.path.join(os.path.dirname(__file__), "loadItems.cpio")
 
 with open(loadItems, "wb") as f:
     f.write(content_decode)
+
+
+# TODO: FIND A FIX FOR ERROR CODE
+# urlopen error [SSL: CERTIFICATE_VERIFY_FAILED]
