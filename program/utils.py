@@ -1,5 +1,7 @@
 import json
 import collections
+import urllib
+import urllib2
 
 
 def format_gist(description, public, file_name, content):
@@ -49,3 +51,22 @@ def decode_zlib_b64(input_string):
     """
 
     return input_string.decode("base64").decode("zlib")
+
+
+def shorten_url(url):
+    """Shorten the gist url.
+
+    Args:
+        url (str): Url to be shortened.
+
+    Returns:
+        str: Shortened url.
+    """
+    request_url = "http://tinyurl.com/api-create.php?" + urllib.urlencode({"url": url})
+    request = urllib2.Request(request_url)
+    response = urllib2.urlopen(request)
+
+    if response.getcode() >= 400:
+        return url
+
+    return response.read()

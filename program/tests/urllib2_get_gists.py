@@ -16,9 +16,10 @@ auth_file = os.path.join(os.path.dirname(os.path.dirname(__file__)), "auth.json"
 
 with open(auth_file, "r") as auth_file:
     auth_data = json.load(auth_file)
+    auth_file.close()
 
 username = auth_data["username"]
-full_token = auth_data["full_token"]
+full_token = auth_data["auth_token"]
 gh_api_url = "https://api.github.com"
 gh_url = "https://github.com"
 usr_gh_url = gh_api_url + "/users/{0}".format(username)
