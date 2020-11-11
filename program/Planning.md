@@ -12,6 +12,7 @@ DEV PLANNING ON H_SNIPPET TOOL.
     - Send Snippet to Clipboard:
         - Select snippet and click button. Will create a file in .h_snippet/sent/ named with 
           snippet's name - username - today's date - random seed. Then will copy the snippet's children items to that file.
+          Upload that file into a gist and return shorten url to clipboard.
     - Create Two classes. transfer_internet and transfer local. Each with send snippet or get snippet methods.
     - Create a Snippet Class.
         - Inherit send snippet and get snippet methods from transfer classes depending on switch. 
