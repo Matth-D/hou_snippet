@@ -2,6 +2,8 @@
 
 import os
 import json
+import urllib
+import urllib2
 
 # CONSTANTS
 program_path = os.path.dirname(__file__)
