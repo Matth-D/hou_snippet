@@ -11,8 +11,11 @@ DEV PLANNING ON H_SNIPPET TOOL.
           at obj level. Rename snippet node with user input name. Change color and shape (TBD)
     - Send Snippet to Clipboard:
         - Select snippet and click button. Will create a file in .h_snippet/sent/ named with 
-          snippet's name - username - today's date - random seed. Then will copy the snippet's children items to that file.
+          snippet's name - username - today's date d/m/y h/m - random seed. Then will copy the snippet's children items to that file.
           Upload that file into a gist and return shorten url to clipboard.
+    - Import Snippet from Clipboard:
+        - Get clipboard content, verify it's a link, get the snippets name / sender username / date sent.
+          Create a file in 
     - Create Two classes. transfer_internet and transfer local. Each with send snippet or get snippet methods.
     - Create a Snippet Class.
         - Inherit send snippet and get snippet methods from transfer classes depending on switch. 
@@ -27,6 +30,7 @@ DEV PLANNING ON H_SNIPPET TOOL.
     - One tab called "Library":
         - List view listing all snippets in .h_snippet folder.
             - columns : Snippet name, sender username, date received.
+        - Import button. Import clicked snippet
 
 -------- UTILS
 
