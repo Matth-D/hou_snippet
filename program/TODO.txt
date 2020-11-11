@@ -1,0 +1,29 @@
+TODO LIST ON H_SNIPPET TOOL.
+
+
+--------CORE
+
+    - Initialize .h_snippet folder in user folder.
+        - If folder not present, ask user for a username.
+        - Two folders > Sent & Received
+    - Create OBJ node snippet from nodes selection
+        - Ask User for snippet name. Get node selection, create subnetwork node at obj level, copy selection to node
+          at obj level. Rename snippet node with user input name. Change color and shape (TBD)
+
+          
+--------UI
+
+    - One tab called "Snippet" with 3 buttons: 
+        - Button Create Snippet from Selection.
+        - Button Send Snippet to Clipboard.
+        - Button Import Snippet from Clipboard.
+    - One tab called "Library":
+        - List view listing all snippets in .h_snippet folder.
+            - columns : Snippet name, sender username, date received 
+
+
+--------UTILS
+
+    - Copy input str to clipboard.
+    - Import clipboard.
+    

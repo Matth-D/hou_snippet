@@ -2,6 +2,14 @@ import json
 import collections
 import urllib
 import urllib2
+import os
+
+program = os.path.dirname(__file__)
+auth_file = os.path.join(program, "auth.json")
+with open(auth_file, "r") as auth_file:
+    json_auth = json.load(auth_file)
+
+cuttly_token = json_auth["cuttly_token"]
 
 
 def format_gist(description, public, file_name, content):
@@ -62,11 +70,28 @@ def shorten_url(url):
     Returns:
         str: Shortened url.
     """
-    request_url = "http://tinyurl.com/api-create.php?" + urllib.urlencode({"url": url})
+    request_url = "http://cutt.ly/api/api.php?" + urllib.urlencode(
+        {"short": url, "key": cuttly_token}
+    )
     request = urllib2.Request(request_url)
+    request.add_header("User-Agent", "Magic Browser")
     response = urllib2.urlopen(request)
 
     if response.getcode() >= 400:
+        request_url = "http://tinyurl.com/api-create.php?" + urllib.urlencode(
+            {"url": url}
+        )
+        request = urllib2.Request(request_url)
+        response = urllib2.urlopen(request)
+        short_url = response.read()
+        return short_url
+
+    short_url = response.read()
+    short_url = json.loads(short_url)
+    short_url = str(short_url["url"]["shortLink"])
+
+    if "https://" not in short_url:
         return url
 
-    return response.read()
+    return short_url
+
