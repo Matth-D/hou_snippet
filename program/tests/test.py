@@ -1,0 +1,2 @@
+print False * True * False
+

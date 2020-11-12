@@ -12,6 +12,18 @@ with open(auth_file, "r") as auth_file:
 cuttly_token = json_auth["cuttly_token"]
 
 
+def is_file_empty(file_path):
+    """Check is file is empty.
+
+    Args:
+        file_path (str): Path to file to check.
+
+    Returns:
+        bool: Boolean True or False if file is empty or not.
+    """
+    return os.path.exists(file_path) and os.stat(file_path).st_size == 0
+
+
 def format_gist(description, public, file_name, content):
     """Return json formatted gist ready for POST.
 
@@ -70,6 +82,7 @@ def shorten_url(url):
     Returns:
         str: Shortened url.
     """
+
     request_url = "http://cutt.ly/api/api.php?" + urllib.urlencode(
         {"short": url, "key": cuttly_token}
     )
