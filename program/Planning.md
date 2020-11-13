@@ -58,6 +58,7 @@ DEV PLANNING ON H_SNIPPET TOOL.
                 - Description > sender username - date - name
 
     To Solve:
-        - What happens if the user copies shader in a sop mat network and creates a snippet ?
+        - sop type = "Sop" material type = "Vop" mantra node = "Driver"
+           if node type != "Sop" create appropriate network to store the nodes.
     Python NB:
         Get node type name = node.type().category().name()

@@ -80,3 +80,15 @@ def create_snippet_network():
     selection = hou.selectedNodes()
     if not selection:
         return
+    obj_context = hou.node("/obj")
+    selection_type = selection[0].type().category().name()
+
+    snippet_name_prompt = hou.ui.readInput("Enter snippet name:", ("OK", "Cancel"))
+    snippet_name = snippet_name_prompt[1]
+
+    if not snippet_name:
+        hou.ui.displayMessage("Please enter a snippet name")
+        return
+
+    snippet_subnet = obj_context.createNode("subnet")
+    snippet_subnet.setName(snippet_name)
