@@ -89,6 +89,17 @@ def create_snippet_network():
     if not snippet_name:
         hou.ui.displayMessage("Please enter a snippet name")
         return
+    snippet_name = snippet_name.replace(" ", "_")
 
     snippet_subnet = obj_context.createNode("subnet")
     snippet_subnet.setName(snippet_name)
+    snippet_subnet.setColor(hou.Color(0, 0, 0))
+    destination_node = snippet_subnet
+
+    if selection_type == "Vop":
+        destination_node = snippet_subnet.createNode("matnet")
+
+    if selection_type == "Driver":
+        destination_node = snippet_subnet.createNode("ropnet")
+
+    hou.copyNodesTo(selection, destination_node)
