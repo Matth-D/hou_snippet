@@ -19,6 +19,8 @@ if platform.system().lower() == "windows":
 else:
     HOME = os.path.expanduser("~")
 
+HOU_VER = hou.applicationVersion()[0]
+
 
 class SnippetPackage:
     def __init__(self, description, filename, public, content):
@@ -94,12 +96,17 @@ def create_snippet_network():
     snippet_subnet = obj_context.createNode("subnet")
     snippet_subnet.setName(snippet_name)
     snippet_subnet.setColor(hou.Color(0, 0, 0))
+    snippet_subnet.setUserData("nodeshape", "wave")
     destination_node = snippet_subnet
+    if selection_type == "Sop":
+        destination_node = snippet_subnet.createNode("geo")
 
     if selection_type == "Vop":
         destination_node = snippet_subnet.createNode("matnet")
 
     if selection_type == "Driver":
         destination_node = snippet_subnet.createNode("ropnet")
+
+    destination_node.setName(snippet_name)
 
     hou.copyNodesTo(selection, destination_node)

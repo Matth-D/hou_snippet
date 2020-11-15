@@ -4,15 +4,15 @@ DEV PLANNING ON H_SNIPPET TOOL.
 -------- CORE
 
     ######- Initialize .h_snippet folder in user folder.
-    ######    - If folder not present, ask user for a username. Store the username in .h_snippet/user
+    ######    - If folder not present, ask user for a username. Store the ######username in .h_snippet/user
     ######    - Two folders > Sent & Received
-    - Create OBJ node snippet from selection.
-        - Ask User for snippet name. Get node selection, create subnetwork node at obj level, copy selection to node
-          at obj level. Rename snippet node with user input name. Change color and shape (TBD)
+    ######- Create OBJ node snippet from selection.
+    ######    - Ask User for snippet name. Get node selection, create ######subnetwork node at obj level, copy selection to node
+    ######      at obj level. Rename snippet node with user input name. ######Change color and shape (TBD)
     - Send Snippet to Clipboard:
         - Select snippet and click button. Will create a file in .h_snippet/sent/ named with 
           snippet's name - username - today's date d/m/y h/m - random seed. Then will copy the snippet's children items to that file.
-          Upload that file into a gist and return shorten url to clipboard.
+          Upload that file into a gist and return shorten url to clipboard. Doesn't need to create a local file for snippet sent? use mktemp instead?
     - Import Snippet from Clipboard:
         - Get clipboard content, verify it's a link, get the snippets name / sender username / date sent.
           Create a file in 
