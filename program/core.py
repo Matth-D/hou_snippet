@@ -14,6 +14,9 @@ auth_file_path = os.path.join(program_path, "auth.json")
 with open(auth_file_path, "r") as auth_file:
     AUTH_DATA = json.load(auth_file)
 
+GIST_USERNAME = AUTH_DATA["username"]
+GIST_TOKEN = AUTH_DATA["gist_token"]
+
 if platform.system().lower() == "windows":
     HOME = os.environ.get("USERPROFILE")
 else:
@@ -31,9 +34,14 @@ class SnippetPackage:
 
 
 # class GitTransfer():
-#     def send_snippet():
+#     def __init__(self, snippet_data):
+#         self.snippet_data = snippet_data
+
+#     def send_snippet(snippet_data):
 
 #     def get_snippet():
+
+#     def delete_snippet():
 
 # class LocalTransfer():
 #     def send_snippet():
@@ -54,10 +62,6 @@ def initialize_user_folder():
     if not os.path.exists(h_snippet_path):
         os.mkdir(h_snippet_path)
 
-    snippet_sent_path = os.path.join(h_snippet_path, "snippets_sent")
-    if not os.path.exists(snippet_sent_path):
-        os.mkdir(snippet_sent_path)
-
     snippet_received_path = os.path.join(h_snippet_path, "snippets_received")
     if not os.path.exists(snippet_received_path):
         os.mkdir(snippet_received_path)
@@ -68,7 +72,8 @@ def initialize_user_folder():
         return
 
     username_prompt = hou.ui.readInput("Enter username:", ("OK", "Cancel"))
-    username = username_prompt[1]
+    username = utils.camel_case(username_prompt[1])
+
     if not username:
         hou.ui.displayMessage("Please enter a valid username")
         return
@@ -98,6 +103,7 @@ def create_snippet_network():
     snippet_subnet.setColor(hou.Color(0, 0, 0))
     snippet_subnet.setUserData("nodeshape", "wave")
     destination_node = snippet_subnet
+
     if selection_type == "Sop":
         destination_node = snippet_subnet.createNode("geo")
 

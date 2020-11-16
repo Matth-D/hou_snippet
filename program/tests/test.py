@@ -1,2 +1,0 @@
-print False * True * False
-

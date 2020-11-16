@@ -3,13 +3,32 @@ import collections
 import urllib
 import urllib2
 import os
+import datetime
 
 program = os.path.dirname(__file__)
 auth_file = os.path.join(program, "auth.json")
 with open(auth_file, "r") as auth_file:
-    json_auth = json.load(auth_file)
+    AUTH_DATA = json.load(auth_file)
 
-cuttly_token = json_auth["cuttly_token"]
+CUTTLY_TOKEN = AUTH_DATA["cuttly_token"]
+
+
+SEP = r"$#!--%"
+
+
+def create_file_name(snippet_name, username):
+    """Create snippet local file name.
+
+    Args:
+        snippet_name (str): Snippet name.
+        username (str): Sender username.
+
+    Returns:
+        str: Local snippet filename.
+    """
+    date = datetime.datetime.today().strftime("%d-%m-%Y")
+    components = (snippet_name, username, date)
+    return SEP.join(components)
 
 
 def is_file_empty(file_path):
@@ -36,7 +55,6 @@ def format_gist(description, public, file_name, content):
     Returns:
         str: JSON formatted str from inputs.
     """
-
     keys = ["description", "public", "files"]
     dict_structure = collections.OrderedDict().fromkeys(keys)
     dict_structure["description"] = description
@@ -56,7 +74,6 @@ def encode_zlib_b64(input_string):
     Returns:
         str: Encoded string.
     """
-
     return input_string.encode("zlib").encode("base64")
 
 
@@ -69,8 +86,22 @@ def decode_zlib_b64(input_string):
     Returns:
         str: Decoded string.
     """
-
     return input_string.decode("base64").decode("zlib")
+
+
+def camel_case(input_string):
+    """Conform user input input_string.
+
+    Args:
+        input_string (str): user input input_string.
+
+    Returns:
+        str: Conformed input_string.
+    """
+    input_string = input_string.replace(" ", "_")
+    components = input_string.split("_")
+    input_string = components[0] + "".join(x.title() for x in components[1:])
+    return input_string
 
 
 def shorten_url(url):
@@ -82,9 +113,8 @@ def shorten_url(url):
     Returns:
         str: Shortened url.
     """
-
     request_url = "http://cutt.ly/api/api.php?" + urllib.urlencode(
-        {"short": url, "key": cuttly_token}
+        {"short": url, "key": CUTTLY_TOKEN}
     )
     request = urllib2.Request(request_url)
     request.add_header("User-Agent", "Magic Browser")
@@ -107,4 +137,3 @@ def shorten_url(url):
         return url
 
     return short_url
-
