@@ -4,7 +4,9 @@ import os
 import json
 import urllib
 import urllib2
+import base64
 import platform
+import collections
 import utils
 import hou
 
@@ -25,23 +27,56 @@ else:
 HOU_VER = hou.applicationVersion()[0]
 
 
-class SnippetPackage:
-    def __init__(self, description, filename, public, content):
-        self.description = description
-        self.filename = filename
-        self.public = public
-        self.content = content
+# class SnippetPackage:
+#     def __init__(self, description, filename, public, content):
+#         self.description = description
+#         self.filename = filename
+#         self.public = public
+#         self.content = content
 
 
-# class GitTransfer():
-#     def __init__(self, snippet_data):
-#         self.snippet_data = snippet_data
+class GitTransfer:
+    def __init__(self):
+        self.gh_api_url = "https://api.github.com"
+        self.gist_api_url = self.gh_api_url + "/gists"
+        self.public = True  # Leaving public gist by default
+        self.gist_data = None
 
-#     def send_snippet(snippet_data):
+    def create_data(self, username, snippet_name, content):
+        description = "Gist containing snippet data for {0} created by {1}.".format(
+            snippet_name, username
+        )
+        filename = utils.create_file_name(snippet_name, username)
+        content = utils.encode_zlib_b64(content)
+        self.gist_data = utils.create_gist_data(description, self.public, filename)
 
-#     def get_snippet():
+    def send_snippet(self, username, snippet_name, content):
 
-#     def delete_snippet():
+        # Set all gist data variables
+
+        # Create Gist Request
+        # method > POST
+        request = urllib2.Request(self.gist_api_url, data=self.gist_data)
+        b64str = base64.b64encode("{0}:{1}".format(GIST_USERNAME, GIST_TOKEN))
+        request.add_header("Authorization", "Basic {0}".format(b64str))
+        response = urllib2.urlopen(request)
+
+        if response.getcode() >= 400:
+            hou.ui.displayMessage("Could not connect to server")
+            return
+        response_content = response.read()
+        response_dict = json.loads(response_content)
+        created_gist_url = response_dict["url"]
+        return created_gist_url
+
+    #    request = urllib2.Request(gist_api_url, data=gist_data)
+
+    def get_snippet():
+        pass
+
+    def delete_snippet():
+        pass
+
 
 # class LocalTransfer():
 #     def send_snippet():

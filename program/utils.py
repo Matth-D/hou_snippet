@@ -4,16 +4,21 @@ import urllib
 import urllib2
 import os
 import datetime
+import hou
 
 program = os.path.dirname(__file__)
 auth_file = os.path.join(program, "auth.json")
+
 with open(auth_file, "r") as auth_file:
     AUTH_DATA = json.load(auth_file)
 
 CUTTLY_TOKEN = AUTH_DATA["cuttly_token"]
-
-
 SEP = r"$#!--%"
+HOU_VER = hou.applicationVersion()[0]
+
+
+def serialize():
+    """if hou<x savechildrentofile else saveItemstoFile need to look it up"""
 
 
 def create_file_name(snippet_name, username):
@@ -43,7 +48,7 @@ def is_file_empty(file_path):
     return os.path.exists(file_path) and os.stat(file_path).st_size == 0
 
 
-def format_gist(description, public, file_name, content):
+def create_gist_data(description, public, file_name, content):
     """Return json formatted gist ready for POST.
 
     Args:
