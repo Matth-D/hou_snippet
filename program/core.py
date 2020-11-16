@@ -57,7 +57,6 @@ class SnippetPackage:
 
 def initialize_user_folder():
     """Initialize .h_snippet folder and user files necessary for further use of the tool."""
-
     h_snippet_path = os.path.join(HOME, ".h_snippet")
     if not os.path.exists(h_snippet_path):
         os.mkdir(h_snippet_path)
