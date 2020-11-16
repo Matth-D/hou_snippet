@@ -1,5 +1,4 @@
-import hou
+import config
 
+config = config.Config()
 
-def function_module1():
-    hou.ui.displayMessage("This is from module1")

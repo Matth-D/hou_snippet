@@ -11,19 +11,11 @@ import utils
 import hou
 
 # CONSTANTS
-program_path = os.path.dirname(__file__)
-auth_file_path = os.path.join(program_path, "auth.json")
+
+auth_file_path = os.path.join(os.path.dirname(__file__), "auth.json")
 with open(auth_file_path, "r") as auth_file:
     AUTH_DATA = json.load(auth_file)
-
-GIST_USERNAME = AUTH_DATA["username"]
-GIST_TOKEN = AUTH_DATA["gist_token"]
-
-if platform.system().lower() == "windows":
-    HOME = os.environ.get("USERPROFILE")
-else:
-    HOME = os.path.expanduser("~")
-
+HOME = os.path.expanduser("~")
 HOU_VER = hou.applicationVersion()[0]
 
 
@@ -41,6 +33,7 @@ class GitTransfer:
         self.gist_api_url = self.gh_api_url + "/gists"
         self.public = True  # Leaving public gist by default
         self.gist_data = None
+        self.separator = r"$#!--%"
 
     def create_data(self, username, snippet_name, content):
         description = "Gist containing snippet data for {0} created by {1}.".format(
@@ -57,7 +50,9 @@ class GitTransfer:
         # Create Gist Request
         # method > POST
         request = urllib2.Request(self.gist_api_url, data=self.gist_data)
-        b64str = base64.b64encode("{0}:{1}".format(GIST_USERNAME, GIST_TOKEN))
+        b64str = base64.b64encode(
+            "{0}:{1}".format(AUTH_DATA["username"], AUTH_DATA["gist_token"])
+        )
         request.add_header("Authorization", "Basic {0}".format(b64str))
         response = urllib2.urlopen(request)
 
@@ -135,7 +130,8 @@ def create_snippet_network():
     snippet_subnet = obj_context.createNode("subnet")
     snippet_subnet.setName(snippet_name)
     snippet_subnet.setColor(hou.Color(0, 0, 0))
-    snippet_subnet.setUserData("nodeshape", "wave")
+    if HOU_VER >= 16:
+        snippet_subnet.setUserData("nodeshape", "wave")
     destination_node = snippet_subnet
 
     if selection_type == "Sop":
