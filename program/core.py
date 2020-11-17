@@ -5,8 +5,6 @@ import json
 import urllib
 import urllib2
 import base64
-import platform
-import collections
 import utils
 import hou
 
@@ -44,11 +42,12 @@ class GitTransfer:
         self.gist_data = utils.create_gist_data(description, self.public, filename)
 
     def send_snippet(self, username, snippet_name, content):
-
-        # Set all gist data variables
-
         # Create Gist Request
         # method > POST
+
+        if not self.gist_data:
+            return
+
         request = urllib2.Request(self.gist_api_url, data=self.gist_data)
         b64str = base64.b64encode(
             "{0}:{1}".format(AUTH_DATA["username"], AUTH_DATA["gist_token"])
