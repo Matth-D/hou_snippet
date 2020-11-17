@@ -16,6 +16,7 @@ class HSnippet(QtWidgets.QDialog):
         self.init_ui()
         self.setGeometry(300, 300, self.app_size[0], self.app_size[1])
         self.center_window()
+        self.setParent(hou.ui.mainQtWindow(), QtCore.Qt.Window)
 
     def init_ui(self):
         """Init UI Layout."""
@@ -49,3 +50,10 @@ class HSnippet(QtWidgets.QDialog):
         )
         app_geo.moveCenter(center_point)
         self.move(app_geo.topLeft())
+
+
+# TODO: write closeEvent method to clean window when closed.
+def main():
+    h_snippet = HSnippet()
+    if not h_snippet.isVisible():
+        h_snippet.show()

@@ -6,11 +6,6 @@
 
 from program import ui
 
-widgets = []
-
 
 def start():
-    win = ui.HSnippet()
-    widgets.append(win)
-    win.show()
-
+    ui.main()
