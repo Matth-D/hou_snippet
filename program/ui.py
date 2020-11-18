@@ -51,9 +51,12 @@ class HSnippet(QtWidgets.QDialog):
         app_geo.moveCenter(center_point)
         self.move(app_geo.topLeft())
 
+    # def closeEvent(self, event):
+    #     print "attempt to close window"
+    #     print event
+
 
 # TODO: write closeEvent method to clean window when closed.
 def main():
     h_snippet = HSnippet()
-    if not h_snippet.isVisible():
-        h_snippet.show()
+    h_snippet.show()
