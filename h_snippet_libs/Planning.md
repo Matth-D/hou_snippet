@@ -39,6 +39,9 @@ DEV PLANNING ON H_SNIPPET TOOL.
     - Create file name for gist from snippet's name, user and today's date.
 
 -------- NOTES
+    Find less generic name for program folder
+    h_snippet executable > repo/bin/h_snippet.py
+    same for cache_deleter
 
     Snippet I/O:
         Send:
@@ -62,3 +65,27 @@ DEV PLANNING ON H_SNIPPET TOOL.
            if node type != "Sop" create appropriate network to store the nodes.
     Python NB:
         Get node type name = node.type().category().name()
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

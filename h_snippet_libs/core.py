@@ -61,21 +61,25 @@ class GitTransfer:
         response_content = response.read()
         response_dict = json.loads(response_content)
         created_gist_url = response_dict["url"]
+
         return created_gist_url
 
     #    request = urllib2.Request(gist_api_url, data=gist_data)
 
-    def get_snippet():
+    def get_snippet(self):
         pass
 
-    def delete_snippet():
+    def delete_snippet(self):
         pass
 
 
-# class LocalTransfer():
-#     def send_snippet():
+class LocalTransfer:
+    def send_snippet(self):
+        pass
 
-#     def get_snippet():
+    def get_snippet(self):
+        pass
+
 
 # class Snippet():
 #     switch_transfer = 1:
