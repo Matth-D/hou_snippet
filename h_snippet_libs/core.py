@@ -6,6 +6,7 @@ import urllib
 import urllib2
 import base64
 import utils
+import tempfile
 import hou
 
 # CONSTANTS
@@ -35,7 +36,9 @@ class GitTransfer:
         self.content_file = None
 
     def create_content(self):
-        pass
+        selection = hou.selectedNodes()[0]
+        if not selection:
+            return
 
     def create_gist_data(self, username, snippet_name, content):
         description = "Gist containing snippet data for {0} created by {1}.".format(
@@ -149,7 +152,9 @@ def create_snippet_network():
 
     if selection_type == "Driver":
         destination_node = snippet_subnet.createNode("ropnet")
-
+    snippet_id = snippet_subnet.createNode("null")
+    snippet_id.setName("snippet_verification")
+    snippet_id.hide(True)
     destination_node.setName(snippet_name)
 
     hou.copyNodesTo(selection, destination_node)
