@@ -32,8 +32,12 @@ class GitTransfer:
         self.public = True  # Leaving public gist by default
         self.gist_data = None
         self.separator = r"$#!--%"
+        self.content_file = None
 
-    def create_data(self, username, snippet_name, content):
+    def create_content(self):
+        pass
+
+    def create_gist_data(self, username, snippet_name, content):
         description = "Gist containing snippet data for {0} created by {1}.".format(
             snippet_name, username
         )
@@ -123,7 +127,7 @@ def create_snippet_network():
     selection_type = selection[0].type().category().name()
 
     snippet_name_prompt = hou.ui.readInput("Enter snippet name:", ("OK", "Cancel"))
-    snippet_name = snippet_name_prompt[1]
+    snippet_name = "snippet_" + snippet_name_prompt[1]
 
     if not snippet_name:
         hou.ui.displayMessage("Please enter a snippet name")

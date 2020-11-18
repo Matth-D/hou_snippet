@@ -1,10 +1,10 @@
+import hou
 import json
 import collections
 import urllib
 import urllib2
 import os
 import datetime
-import hou
 
 program = os.path.dirname(__file__)
 auth_file = os.path.join(program, "auth.json")
@@ -34,6 +34,13 @@ def create_file_name(snippet_name, username):
     date = datetime.datetime.today().strftime("%d-%m-%Y")
     components = (snippet_name, username, date)
     return SEP.join(components)
+
+
+def print_file_head(input_file_path, lines):
+    file_path = open(input_file_path, "r")
+    for i in range(lines):
+        line = file_path.readline()
+        print line
 
 
 def is_file_empty(file_path):
@@ -142,3 +149,4 @@ def shorten_url(url):
         return url
 
     return short_url
+
