@@ -3,12 +3,12 @@ DEV PLANNING ON H_SNIPPET TOOL.
 
 -------- CORE
 
-    ######- Initialize .h_snippet folder in user folder.
-    ######    - If folder not present, ask user for a username. Store the ######username in .######h_snippet/user
-    ######    - Two folders > Sent & Received
-    ######- Create OBJ node snippet from selection.
-    ######    - Ask User for snippet name. Get node selection, create ######subnetwork node at obj ######level, copy selection to node
-    ######      at obj level. Rename snippet node with user input name. ######Change color and shape (TBD)
+    - Initialize .h_snippet folder in user folder.
+        - If folder not present, ask user for a username. Store the ######username in .######h_snippet/user
+        - Two folders > Sent & Received
+    - Create OBJ node snippet from selection.
+        - Ask User for snippet name. Get node selection, create subnetwork node at obj level copy selection to node
+          at obj level. Rename snippet node with user input name. Change color and shape (TBD)
     - Send Snippet to Clipboard:
         - Select snippet and click button.Will create a temp file filled with gist information and the identifier in filename "username_snippetname_date"Then will copy the snippet's children items to that file.
           Upload that file into a gist and return shorten url to clipboard.

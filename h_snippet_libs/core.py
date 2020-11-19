@@ -1,13 +1,15 @@
 """H_snippet Core module"""
 
-import os
+import base64
 import json
+import os
+import tempfile
 import urllib
 import urllib2
-import base64
-import utils
-import tempfile
+
 import hou
+
+from . import utils
 
 # CONSTANTS
 
@@ -34,14 +36,18 @@ class GitTransfer:
         self.gist_data = None
         self.separator = r"$#!--%"
         self.content_file = None
+        self.content = None
 
-    def create_content(self):
-        selection = hou.selectedNodes()[0]
-        if not selection:
-            return
-        snippet_verif = hou.node(os.path.join(selection.path(), "snippet_verification"))
-        print snippet_verif
-        # if "snippet_" not in selection.name():
+    def create_content(self, selection):
+
+        fd, self.content_file = tempfile.mkstemp(suffix=".cpio")
+        # When figured out implement switch with saveChildrenToFile() function
+        selection.saveItemsToFile(selection.children(), self.content_file, False)
+
+        with open(self.content_file, "r") as f:
+            self.content = f.read()
+
+        # os.close(self.content_file)
 
     def create_gist_data(self, username, snippet_name, content):
         description = "Gist containing snippet data for {0} created by {1}.".format(
@@ -91,13 +97,7 @@ class LocalTransfer:
         pass
 
 
-# class Snippet():
-#     switch_transfer = 1:
-#     self.transfer = GitTransfer()
-#     if not switch_transfer:
-#         self.transfer = LocalTransfer()
-
-
+# TODO: THINK OF A BETTER WAY TO ORGANISE CODE BELOW
 def initialize_user_folder():
     """Initialize .h_snippet folder and user files necessary for further use of the tool."""
     h_snippet_path = os.path.join(HOME, ".h_snippet")
@@ -128,6 +128,7 @@ def create_snippet_network():
     """Create snippet subnetwork at /obj level for user selection"""
     selection = hou.selectedNodes()
     if not selection:
+        hou.ui.displayMessage("Please select nodes to send.")
         return
     obj_context = hou.node("/obj")
     selection_type = selection[0].type().category().name()
@@ -157,6 +158,7 @@ def create_snippet_network():
         destination_node = snippet_subnet.createNode("ropnet")
     snippet_verif = snippet_subnet.createNode("null")
     snippet_verif.setName("snippet_verification")
+    snippet_verif.setDisplayFlag(False)
     snippet_verif.hide(True)
     destination_node.setName(snippet_name)
 
@@ -164,4 +166,25 @@ def create_snippet_network():
 
 
 def send_snippet_to_clipboard():
-    print "prout"
+    selection = hou.selectedNodes()[0]
+    if not selection:
+        return
+    snippet_verif = hou.node(selection.path() + "/snippet_verification")
+    if "snippet_" not in selection.name() or not snippet_verif:
+        hou.ui.displayMessage(
+            "Please select a snippet node network. Must be created with the H_Snippet shelf tool."
+        )
+        return
+    transfer = GitTransfer()
+    transfer.create_content(selection)
+
+
+class classTest:
+    def __init__(self):
+        self.selection = hou.selectedNodes()[0]
+
+    def print_selection(self):
+        self.selection = hou.selectedNodes()[0]
+        print self.selection
+        # print "init:" + self.selection.name()
+        # print "call again:" + hou.selectedNodes()[0].name()
