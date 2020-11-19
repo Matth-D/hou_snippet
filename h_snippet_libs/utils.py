@@ -17,10 +17,6 @@ SEP = r"$#!--%"
 HOU_VER = hou.applicationVersion()[0]
 
 
-def serialize():
-    """if hou<x savechildrentofile else saveItemstoFile need to look it up"""
-
-
 def create_file_name(snippet_name, username):
     """Create snippet local file name.
 
@@ -149,4 +145,3 @@ def shorten_url(url):
         return url
 
     return short_url
-

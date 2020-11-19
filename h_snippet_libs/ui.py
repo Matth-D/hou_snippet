@@ -82,8 +82,8 @@ class HSnippet(QtWidgets.QDialog):
         self.create_snippet_btn.setMaximumWidth(self.app_size[0] * 0.55)
         self.send_snippet_btn.setMaximumWidth(self.app_size[0] * 0.55)
         self.import_snippet_btn.setMaximumWidth(self.app_size[0] * 0.55)
-        self.library_import_btn.setMaximumWidth(self.app_size[0] * 0.3)
-        self.library_delete_btn.setMaximumWidth(self.app_size[0] * 0.3)
+        # self.library_import_btn.setMaximumWidth(self.app_size[0] * 0.3)
+        # self.library_delete_btn.setMaximumWidth(self.app_size[0] * 0.3)
 
         # UI Options
         self.setWindowFlags(QtCore.Qt.WindowStaysOnTopHint)
@@ -108,4 +108,3 @@ def main():
             return
     h_snippet = HSnippet()
     h_snippet.show()
-

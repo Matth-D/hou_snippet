@@ -39,6 +39,9 @@ class GitTransfer:
         selection = hou.selectedNodes()[0]
         if not selection:
             return
+        snippet_verif = hou.node(os.path.join(selection.path(), "snippet_verification"))
+        print snippet_verif
+        # if "snippet_" not in selection.name():
 
     def create_gist_data(self, username, snippet_name, content):
         description = "Gist containing snippet data for {0} created by {1}.".format(
@@ -152,9 +155,13 @@ def create_snippet_network():
 
     if selection_type == "Driver":
         destination_node = snippet_subnet.createNode("ropnet")
-    snippet_id = snippet_subnet.createNode("null")
-    snippet_id.setName("snippet_verification")
-    snippet_id.hide(True)
+    snippet_verif = snippet_subnet.createNode("null")
+    snippet_verif.setName("snippet_verification")
+    snippet_verif.hide(True)
     destination_node.setName(snippet_name)
 
     hou.copyNodesTo(selection, destination_node)
+
+
+def send_snippet_to_clipboard():
+    print "prout"
