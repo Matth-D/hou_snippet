@@ -1,10 +1,11 @@
-import hou
-import json
 import collections
+import datetime
+import json
+import os
 import urllib
 import urllib2
-import os
-import datetime
+
+import hou
 
 program = os.path.dirname(__file__)
 auth_file = os.path.join(program, "auth.json")
