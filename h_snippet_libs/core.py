@@ -97,31 +97,36 @@ class LocalTransfer:
         pass
 
 
-# TODO: THINK OF A BETTER WAY TO ORGANISE CODE BELOW
-def initialize_user_folder():
-    """Initialize .h_snippet folder and user files necessary for further use of the tool."""
-    h_snippet_path = os.path.join(HOME, ".h_snippet")
-    if not os.path.exists(h_snippet_path):
-        os.mkdir(h_snippet_path)
+class Snippet:
+    def __init__(self):
+        super(Snippet, self).__init__()
+        self.transfer = GitTransfer()
+        self.initialize_user_folder()
 
-    snippet_received_path = os.path.join(h_snippet_path, "snippets_received")
-    if not os.path.exists(snippet_received_path):
-        os.mkdir(snippet_received_path)
+    def initialize_user_folder(self):
+        """Initialize .h_snippet folder and user files necessary for further use of the tool."""
+        h_snippet_path = os.path.join(HOME, ".h_snippet")
+        if not os.path.exists(h_snippet_path):
+            os.mkdir(h_snippet_path)
 
-    user_file_path = os.path.join(h_snippet_path, "user.json")
+        snippet_received_path = os.path.join(h_snippet_path, "snippets_received")
+        if not os.path.exists(snippet_received_path):
+            os.mkdir(snippet_received_path)
 
-    if os.path.exists(user_file_path):
-        return
+        user_file_path = os.path.join(h_snippet_path, "user.json")
 
-    username_prompt = hou.ui.readInput("Enter username:", ("OK", "Cancel"))
-    username = utils.camel_case(username_prompt[1])
+        if os.path.exists(user_file_path):
+            return
 
-    if not username:
-        hou.ui.displayMessage("Please enter a valid username")
-        return
+        username_prompt = hou.ui.readInput("Enter username:", ("OK", "Cancel"))
+        username = utils.camel_case(username_prompt[1])
 
-    with open(user_file_path, "w") as user_file:
-        json.dump({"username": username}, user_file, indent=4)
+        if not username:
+            hou.ui.displayMessage("Please enter a valid username")
+            return
+
+        with open(user_file_path, "w") as user_file:
+            json.dump({"username": username}, user_file, indent=4)
 
 
 def create_snippet_network():
@@ -181,10 +186,9 @@ def send_snippet_to_clipboard():
 
 class classTest:
     def __init__(self):
-        self.selection = hou.selectedNodes()[0]
+        self.selection = None
 
     def print_selection(self):
-        self.selection = hou.selectedNodes()[0]
-        print self.selection
-        # print "init:" + self.selection.name()
-        # print "call again:" + hou.selectedNodes()[0].name()
+        self.selection = utils.get_selection(0)
+        check_selection = utils.is_snippet(self.selection)
+        print check_selection
