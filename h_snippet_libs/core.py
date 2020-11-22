@@ -99,75 +99,79 @@ class LocalTransfer:
 
 class Snippet:
     def __init__(self):
-        super(Snippet, self).__init__()
+        # super(Snippet, self).__init__()
         self.transfer = GitTransfer()
+        self.h_snippet_path = os.path.join(HOME, ".h_snippet")
+        self.user_file_path = os.path.join(self.h_snippet_path, "user.json")
+        self.username = None
         self.initialize_user_folder()
 
     def initialize_user_folder(self):
         """Initialize .h_snippet folder and user files necessary for further use of the tool."""
-        h_snippet_path = os.path.join(HOME, ".h_snippet")
-        if not os.path.exists(h_snippet_path):
-            os.mkdir(h_snippet_path)
+        if not os.path.exists(self.h_snippet_path):
+            os.mkdir(self.h_snippet_path)
 
-        snippet_received_path = os.path.join(h_snippet_path, "snippets_received")
+        snippet_received_path = os.path.join(self.h_snippet_path, "snippets_received")
         if not os.path.exists(snippet_received_path):
             os.mkdir(snippet_received_path)
 
-        user_file_path = os.path.join(h_snippet_path, "user.json")
-
-        if os.path.exists(user_file_path):
+        if os.path.exists(self.user_file_path):
+            with open(self.user_file_path, "r") as user_file:
+                user_data = json.load(user_file)
+            self.username = user_data["username"]
             return
 
         username_prompt = hou.ui.readInput("Enter username:", ("OK", "Cancel"))
-        username = utils.camel_case(username_prompt[1])
+        self.username = utils.camel_case(username_prompt[1])
 
-        if not username:
+        if not self.username:
             hou.ui.displayMessage("Please enter a valid username")
             return
 
-        with open(user_file_path, "w") as user_file:
-            json.dump({"username": username}, user_file, indent=4)
+        with open(self.user_file_path, "w") as user_file:
+            json.dump({"username": self.username}, user_file, indent=4)
 
+    def create_snippet_network():
+        """Create snippet subnetwork at /obj level for user selection"""
+        selection = utils.get_selection(1)
 
-def create_snippet_network():
-    """Create snippet subnetwork at /obj level for user selection"""
-    selection = hou.selectedNodes()
-    if not selection:
-        hou.ui.displayMessage("Please select nodes to send.")
-        return
-    obj_context = hou.node("/obj")
-    selection_type = selection[0].type().category().name()
+        if not selection:
+            hou.ui.displayMessage("Please select nodes to send.")
+            return
 
-    snippet_name_prompt = hou.ui.readInput("Enter snippet name:", ("OK", "Cancel"))
-    snippet_name = "snippet_" + snippet_name_prompt[1]
+        obj_context = hou.node("/obj")
+        selection_type = selection[0].type().category().name()
 
-    if not snippet_name:
-        hou.ui.displayMessage("Please enter a snippet name")
-        return
-    snippet_name = snippet_name.replace(" ", "_")
+        snippet_name_prompt = hou.ui.readInput("Enter snippet name:", ("OK", "Cancel"))
+        snippet_name = "snippet_" + snippet_name_prompt[1]
 
-    snippet_subnet = obj_context.createNode("subnet")
-    snippet_subnet.setName(snippet_name)
-    snippet_subnet.setColor(hou.Color(0, 0, 0))
-    if HOU_VER >= 16:
-        snippet_subnet.setUserData("nodeshape", "wave")
-    destination_node = snippet_subnet
+        if not snippet_name:
+            hou.ui.displayMessage("Please enter a snippet name")
+            return
+        snippet_name = snippet_name.replace(" ", "_")
 
-    if selection_type == "Sop":
-        destination_node = snippet_subnet.createNode("geo")
+        snippet_subnet = obj_context.createNode("subnet")
+        snippet_subnet.setName(snippet_name)
+        snippet_subnet.setColor(hou.Color(0, 0, 0))
+        if HOU_VER >= 16:
+            snippet_subnet.setUserData("nodeshape", "wave")
+        destination_node = snippet_subnet
 
-    if selection_type == "Vop":
-        destination_node = snippet_subnet.createNode("matnet")
+        if selection_type == "Sop":
+            destination_node = snippet_subnet.createNode("geo")
 
-    if selection_type == "Driver":
-        destination_node = snippet_subnet.createNode("ropnet")
-    snippet_verif = snippet_subnet.createNode("null")
-    snippet_verif.setName("snippet_verification")
-    snippet_verif.setDisplayFlag(False)
-    snippet_verif.hide(True)
-    destination_node.setName(snippet_name)
+        if selection_type == "Vop":
+            destination_node = snippet_subnet.createNode("matnet")
 
-    hou.copyNodesTo(selection, destination_node)
+        if selection_type == "Driver":
+            destination_node = snippet_subnet.createNode("ropnet")
+        snippet_verif = snippet_subnet.createNode("null")
+        snippet_verif.setName("snippet_verification")
+        snippet_verif.setDisplayFlag(False)
+        snippet_verif.hide(True)
+        destination_node.setName(snippet_name)
+
+        hou.copyNodesTo(selection, destination_node)
 
 
 def send_snippet_to_clipboard():

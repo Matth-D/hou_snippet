@@ -78,8 +78,9 @@ class HSnippet(QtWidgets.QDialog):
 
         self.main_layout.addWidget(self.tab_widget)
         self.test_class = core.classTest()
+        self.snippet = core.Snippet()
         # Signals and connect
-        self.create_snippet_btn.clicked.connect(core.create_snippet_network)
+        self.create_snippet_btn.clicked.connect(self.snippet.create_snippet_network)
         # self.send_snippet_btn.clicked.connect(core.send_snippet_to_clipboard)
         self.send_snippet_btn.clicked.connect(self.test_class.print_selection)
         # Appearance
