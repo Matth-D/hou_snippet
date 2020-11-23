@@ -3,6 +3,8 @@
 import base64
 import json
 import os
+import platform
+import sys
 import tempfile
 import urllib
 import urllib2
@@ -16,7 +18,7 @@ from . import utils
 auth_file_path = os.path.join(os.path.dirname(__file__), "auth.json")
 with open(auth_file_path, "r") as auth_file:
     AUTH_DATA = json.load(auth_file)
-HOME = os.path.expanduser("~")
+HOME = os.environ.get("HOME", os.environ.get("USERPROFILE"))
 HOU_VER = hou.applicationVersion()[0]
 
 
@@ -126,7 +128,7 @@ class Snippet:
 
         if not self.username:
             hou.ui.displayMessage("Please enter a valid username")
-            return
+            sys.exit(1)
 
         with open(self.user_file_path, "w") as user_file:
             json.dump({"username": self.username}, user_file, indent=4)
@@ -188,11 +190,11 @@ def send_snippet_to_clipboard():
     transfer.create_content(selection)
 
 
-class classTest:
-    def __init__(self):
-        self.selection = None
+# class classTest:
+#     def __init__(self):
+#         self.selection = None
 
-    def print_selection(self):
-        self.selection = utils.get_selection(0)
-        check_selection = utils.is_snippet(self.selection)
-        print check_selection
+#     def print_selection(self):
+#         self.selection = utils.get_selection(0)
+#         check_selection = utils.is_snippet(self.selection)
+#         print check_selection

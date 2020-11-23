@@ -77,12 +77,12 @@ class HSnippet(QtWidgets.QDialog):
         self.layout_h1.addWidget(self.library_delete_btn)
 
         self.main_layout.addWidget(self.tab_widget)
-        self.test_class = core.classTest()
+        # self.test_class = core.classTest()
         self.snippet = core.Snippet()
         # Signals and connect
         self.create_snippet_btn.clicked.connect(self.snippet.create_snippet_network)
         # self.send_snippet_btn.clicked.connect(core.send_snippet_to_clipboard)
-        self.send_snippet_btn.clicked.connect(self.test_class.print_selection)
+        # self.send_snippet_btn.clicked.connect(self.test_class.print_selection)
         # Appearance
         self.create_snippet_btn.setMaximumWidth(self.app_size[0] * 0.55)
         self.send_snippet_btn.setMaximumWidth(self.app_size[0] * 0.55)
