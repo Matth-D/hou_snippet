@@ -18,9 +18,10 @@ from . import utils
 auth_file_path = os.path.join(os.path.dirname(__file__), "auth.json")
 with open(auth_file_path, "r") as auth_file:
     AUTH_DATA = json.load(auth_file)
-HOME = os.environ.get("HOME", os.environ.get("USERPROFILE"))
+# HOME = os.environ.get("HOME", os.environ.get("USERPROFILE"))
+HOME = utils.get_home()
 HOU_VER = hou.applicationVersion()[0]
-
+SEP = utils.SEP
 
 # class SnippetPackage:
 #     def __init__(self, description, filename, public, content):
@@ -31,35 +32,49 @@ HOU_VER = hou.applicationVersion()[0]
 
 
 class GitTransfer:
-    def __init__(self):
+    def __init__(self, *args, **kwargs):
         self.gh_api_url = "https://api.github.com"
         self.gist_api_url = self.gh_api_url + "/gists"
-        self.public = True  # Leaving public gist by default
+        self.snippet_node = kwargs.pop("snippet_node", None)
+        self.snippet_name = None
+        self.username = kwargs.pop("username", "default")
+        self.public = "True"  # Leaving public gist by default
         self.gist_data = None
         self.separator = r"$#!--%"
         self.content_file = None
         self.content = None
 
-    def create_content(self, selection):
-
+    def create_content(self, snippet):
+        self.snippet_name = snippet.name()
         fd, self.content_file = tempfile.mkstemp(suffix=".cpio")
         # When figured out implement switch with saveChildrenToFile() function
-        selection.saveItemsToFile(selection.children(), self.content_file, False)
+        snippet.saveItemsToFile(snippet.children(), self.content_file, False)
 
         with open(self.content_file, "r") as f:
             self.content = f.read()
-
+        # utils.print_file_head(self.content_file, 5)
         # os.close(self.content_file)
 
-    def create_gist_data(self, username, snippet_name, content):
+    def format_gist_data(self, username, snippet_name, content):
         description = "Gist containing snippet data for {0} created by {1}.".format(
             snippet_name, username
         )
         filename = utils.create_file_name(snippet_name, username)
         content = utils.encode_zlib_b64(content)
-        self.gist_data = utils.create_gist_data(description, self.public, filename)
+        # self.gist_data = utils.create_gist_data(
+        #     description, self.public, filename, content
+        # )
+        print description, type(description)
+        print self.public, type(self.public)
+        print filename, type(filename)
+        print content[:55], type(content)
+        self.gist_data = utils.create_gist_data(
+            description, self.public, filename, content
+        )
+        print self.gist_data
+        # FIGURE OUT WHY GIST DATA DOESN'T CONNECT
 
-    def send_snippet(self, username, snippet_name, content):
+    def gist_request(self, username, snippet_name, content):
         # Create Gist Request
         # method > POST
 
@@ -83,6 +98,15 @@ class GitTransfer:
         return created_gist_url
 
     #    request = urllib2.Request(gist_api_url, data=gist_data)
+    def send_snippet(self):
+        self.create_content(self.snippet_node)
+        test_file = os.path.join(os.path.dirname(__file__), "tests", "test_paste.cpio")
+        self.format_gist_data(self.username, self.snippet_name, self.content)
+        # if os.path.exists(test_file):
+        #     print "il existeeee"
+        # print testfile
+        # with open(testfile, "w") as data:
+        #     json.dump("prout", data, indent=4)
 
     def get_snippet(self):
         pass
@@ -106,6 +130,7 @@ class Snippet:
         self.h_snippet_path = os.path.join(HOME, ".h_snippet")
         self.user_file_path = os.path.join(self.h_snippet_path, "user.json")
         self.username = None
+        self.local_transfer_switch = None
         self.initialize_user_folder()
 
     def initialize_user_folder(self):
@@ -123,7 +148,9 @@ class Snippet:
             self.username = user_data["username"]
             return
 
-        username_prompt = hou.ui.readInput("Enter username:", ("OK", "Cancel"))
+        username_prompt = hou.ui.readInput(
+            "First usage, please enter username:", ("OK", "Cancel")
+        )
         self.username = utils.camel_case(username_prompt[1])
 
         if not self.username:
@@ -133,7 +160,7 @@ class Snippet:
         with open(self.user_file_path, "w") as user_file:
             json.dump({"username": self.username}, user_file, indent=4)
 
-    def create_snippet_network():
+    def create_snippet_network(self):
         """Create snippet subnetwork at /obj level for user selection"""
         selection = utils.get_selection(1)
 
@@ -171,23 +198,26 @@ class Snippet:
         snippet_verif.setName("snippet_verification")
         snippet_verif.setDisplayFlag(False)
         snippet_verif.hide(True)
-        destination_node.setName(snippet_name)
+        destination_node.setName("container_" + snippet_name_prompt[1])
+        destination_node.setColor(hou.Color(0, 0, 0))
 
         hou.copyNodesTo(selection, destination_node)
 
+    def send_snippet_to_clipboard(self):
+        selection = utils.get_selection(0)
 
-def send_snippet_to_clipboard():
-    selection = hou.selectedNodes()[0]
-    if not selection:
-        return
-    snippet_verif = hou.node(selection.path() + "/snippet_verification")
-    if "snippet_" not in selection.name() or not snippet_verif:
-        hou.ui.displayMessage(
-            "Please select a snippet node network. Must be created with the H_Snippet shelf tool."
-        )
-        return
-    transfer = GitTransfer()
-    transfer.create_content(selection)
+        if not selection or not utils.is_snippet(selection):
+            hou.ui.displayMessage(
+                "Please select a snippet node network. Must be created with the H_Snippet shelf tool."
+            )
+            return
+
+        transfer = GitTransfer(snippet_node=selection, username=self.username)
+
+        if self.local_transfer_switch:
+            transfer = LocalTransfer()
+        # transfer.create_content(selection)
+        transfer.send_snippet()
 
 
 # class classTest:

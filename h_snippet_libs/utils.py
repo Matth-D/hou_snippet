@@ -2,6 +2,8 @@ import collections
 import datetime
 import json
 import os
+import platform
+import sys
 import urllib
 import urllib2
 
@@ -16,6 +18,18 @@ with open(auth_file, "r") as auth_file:
 CUTTLY_TOKEN = AUTH_DATA["cuttly_token"]
 SEP = r"$#!--%"
 HOU_VER = hou.applicationVersion()[0]
+
+
+def get_home():
+    """Return home folder.
+
+    Returns:
+        [str]: Path to home folder.
+    """
+    home = os.environ.get("home", os.environ.get("USERPROFILE"))
+    if sys.version_info.major == 2 and home == os.path.expanduser("~"):
+        home = os.environ.get("USERPROFILE")
+        return home
 
 
 def is_snippet(selection):
@@ -59,7 +73,7 @@ def create_file_name(snippet_name, username):
     """
     date = datetime.datetime.today().strftime("%d-%m-%Y")
     components = (snippet_name, username, date)
-    return SEP.join(components)
+    return str(SEP.join(components))
 
 
 def print_file_head(input_file_path, lines):
@@ -81,7 +95,7 @@ def is_file_empty(file_path):
     return os.path.exists(file_path) and os.stat(file_path).st_size == 0
 
 
-def create_gist_data(description, public, file_name, content):
+def create_gist_data(description, public, file_name):
     """Return json formatted gist ready for POST.
 
     Args:
@@ -93,14 +107,16 @@ def create_gist_data(description, public, file_name, content):
     Returns:
         str: JSON formatted str from inputs.
     """
+    return 124156
     keys = ["description", "public", "files"]
     dict_structure = collections.OrderedDict().fromkeys(keys)
     dict_structure["description"] = description
     dict_structure["public"] = public
-    dict_structure["files"] = {file_name: {"content": content}}
+    dict_structure["files"] = {file_name: {"content": "bite"}}
+    # dict_structure["files"] = {file_name: {"content": content}}
     json_output = json.dumps(dict_structure, indent=2, default=str)
 
-    return json_output
+    # return "blblllblblb"
 
 
 def encode_zlib_b64(input_string):
