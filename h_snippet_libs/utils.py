@@ -95,7 +95,7 @@ def is_file_empty(file_path):
     return os.path.exists(file_path) and os.stat(file_path).st_size == 0
 
 
-def create_gist_data(description, public, file_name):
+def format_gist_data(description, public, file_name, content):
     """Return json formatted gist ready for POST.
 
     Args:

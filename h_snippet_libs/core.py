@@ -55,23 +55,20 @@ class GitTransfer:
         # utils.print_file_head(self.content_file, 5)
         # os.close(self.content_file)
 
-    def format_gist_data(self, username, snippet_name, content):
+    def create_gist_data(self, username, snippet_name, content):
         description = "Gist containing snippet data for {0} created by {1}.".format(
             snippet_name, username
         )
         filename = utils.create_file_name(snippet_name, username)
         content = utils.encode_zlib_b64(content)
-        # self.gist_data = utils.create_gist_data(
-        #     description, self.public, filename, content
-        # )
-        print description, type(description)
-        print self.public, type(self.public)
-        print filename, type(filename)
-        print content[:55], type(content)
-        self.gist_data = utils.create_gist_data(
+        # print description, type(description)
+        # print self.public, type(self.public)
+        # print filename, type(filename)
+        # print content[:55], type(content)
+        # print self.gist_data
+        self.gist_data = utils.format_gist_data(
             description, self.public, filename, content
         )
-        print self.gist_data
         # FIGURE OUT WHY GIST DATA DOESN'T CONNECT
 
     def gist_request(self, username, snippet_name, content):
