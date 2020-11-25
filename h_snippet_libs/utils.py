@@ -7,7 +7,7 @@ import sys
 import urllib
 import urllib2
 
-import hou
+# import hou
 
 program = os.path.dirname(__file__)
 auth_file = os.path.join(program, "auth.json")
@@ -17,7 +17,7 @@ with open(auth_file, "r") as auth_file:
 
 CUTTLY_TOKEN = AUTH_DATA["cuttly_token"]
 SEP = r"$#!--%"
-HOU_VER = hou.applicationVersion()[0]
+# HOU_VER = hou.applicationVersion()[0]
 
 
 def get_home():
