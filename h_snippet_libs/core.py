@@ -18,17 +18,9 @@ from . import utils
 auth_file_path = os.path.join(os.path.dirname(__file__), "auth.json")
 with open(auth_file_path, "r") as auth_file:
     AUTH_DATA = json.load(auth_file)
-# HOME = os.environ.get("HOME", os.environ.get("USERPROFILE"))
 HOME = utils.get_home()
 HOU_VER = hou.applicationVersion()[0]
 SEP = utils.SEP
-
-# class SnippetPackage:
-#     def __init__(self, description, filename, public, content):
-#         self.description = description
-#         self.filename = filename
-#         self.public = public
-#         self.content = content
 
 
 class GitTransfer:
@@ -38,47 +30,33 @@ class GitTransfer:
         self.snippet_node = kwargs.pop("snippet_node", None)
         self.snippet_name = None
         self.username = kwargs.pop("username", "default")
-        self.public = "True"  # Leaving public gist by default
+        self.public = True  # Leaving public gist by default
         self.gist_data = None
         self.separator = r"$#!--%"
+        self.fd = None
         self.content_file = None
         self.content = None
+        self.created_url = None
 
     def create_content(self, snippet):
         self.snippet_name = snippet.name()
-        fd, self.content_file = tempfile.mkstemp(suffix=".cpio")
+        self.fd, self.content_file = tempfile.mkstemp(suffix=".cpio")
         # When figured out implement switch with saveChildrenToFile() function
         snippet.saveItemsToFile(snippet.children(), self.content_file, False)
 
         with open(self.content_file, "r") as f:
             self.content = f.read()
-        # utils.print_file_head(self.content_file, 5)
-        # os.close(self.content_file)
 
     def create_gist_data(self, username, snippet_name, content):
-        description = "Gist containing snippet data for {0} created by {1}.".format(
-            snippet_name, username
-        )
-        filename = utils.create_file_name(snippet_name, username)
+        description = utils.create_file_name(snippet_name, username)
         content = utils.encode_zlib_b64(content)
-        # print description, type(description)
-        # print self.public, type(self.public)
-        # print filename, type(filename)
-        # print content[:55], type(content)
-        # print self.gist_data
-        self.gist_data = utils.format_gist_data(
-            description, self.public, filename, content
-        )
-        # FIGURE OUT WHY GIST DATA DOESN'T CONNECT
+        self.gist_data = utils.format_gist_data(description, self.public, content)
 
-    def gist_request(self, username, snippet_name, content):
-        # Create Gist Request
-        # method > POST
-
-        if not self.gist_data:
+    def gist_request(self, payload):
+        if not payload:
             return
 
-        request = urllib2.Request(self.gist_api_url, data=self.gist_data)
+        request = urllib2.Request(self.gist_api_url, data=payload)
         b64str = base64.b64encode(
             "{0}:{1}".format(AUTH_DATA["username"], AUTH_DATA["gist_token"])
         )
@@ -90,20 +68,20 @@ class GitTransfer:
             return
         response_content = response.read()
         response_dict = json.loads(response_content)
-        created_gist_url = response_dict["url"]
+        url = response_dict["url"]
+        url = utils.shorten_url(url)
+        self.created_url = url
 
-        return created_gist_url
+    def string_to_clipboard(self, input_string):
+        hou.ui.copyTextToClipboard(input_string)
 
-    #    request = urllib2.Request(gist_api_url, data=gist_data)
     def send_snippet(self):
         self.create_content(self.snippet_node)
-        test_file = os.path.join(os.path.dirname(__file__), "tests", "test_paste.cpio")
-        self.format_gist_data(self.username, self.snippet_name, self.content)
-        # if os.path.exists(test_file):
-        #     print "il existeeee"
-        # print testfile
-        # with open(testfile, "w") as data:
-        #     json.dump("prout", data, indent=4)
+        self.create_gist_data(self.username, self.snippet_name, self.content)
+        self.gist_request(self.gist_data)
+        self.string_to_clipboard(self.created_url)
+        os.close(self.fd)
+        os.remove(self.content_file)
 
     def get_snippet(self):
         pass
@@ -169,12 +147,13 @@ class Snippet:
         selection_type = selection[0].type().category().name()
 
         snippet_name_prompt = hou.ui.readInput("Enter snippet name:", ("OK", "Cancel"))
-        snippet_name = "snippet_" + snippet_name_prompt[1]
+        input_name = snippet_name_prompt[1]
+        input_name = input_name.replace(" ", "_")
+        snippet_name = "snippet_" + input_name
 
         if not snippet_name:
             hou.ui.displayMessage("Please enter a snippet name")
             return
-        snippet_name = snippet_name.replace(" ", "_")
 
         snippet_subnet = obj_context.createNode("subnet")
         snippet_subnet.setName(snippet_name)
@@ -183,19 +162,24 @@ class Snippet:
             snippet_subnet.setUserData("nodeshape", "wave")
         destination_node = snippet_subnet
 
+        if selection_type == "Object":
+            selection.setName("container_" + input_name)
         if selection_type == "Sop":
             destination_node = snippet_subnet.createNode("geo")
+            destination_node.setName("container_" + input_name)
 
         if selection_type == "Vop":
             destination_node = snippet_subnet.createNode("matnet")
+            destination_node.setName("container_" + input_name)
 
         if selection_type == "Driver":
             destination_node = snippet_subnet.createNode("ropnet")
+            destination_node.setName("container_" + input_name)
+
         snippet_verif = snippet_subnet.createNode("null")
         snippet_verif.setName("snippet_verification")
         snippet_verif.setDisplayFlag(False)
         snippet_verif.hide(True)
-        destination_node.setName("container_" + snippet_name_prompt[1])
         destination_node.setColor(hou.Color(0, 0, 0))
 
         hou.copyNodesTo(selection, destination_node)

@@ -1,32 +1,23 @@
-import sys
-import os
+import base64
 import json
+import os
+import sys
 import urllib
 import urllib2
-import base64
 import zlib
-
-
-program = os.path.dirname(os.path.dirname(__file__))
-utils_path = os.path.join(program, "utils.py")
-
-if utils_path not in sys.path:
-    sys.path.append(utils_path)
-if program not in sys.path:
-    sys.path.append(program)
 
 import utils
 
-
+program = os.path.dirname(__file__)
 auth_file = os.path.join(program, "auth.json")
-
 with open(auth_file, "r") as auth_file:
     auth_data = json.load(auth_file)
+
 
 """Request data"""
 
 username = auth_data["username"]
-gist_token = auth_data["auth_token"]
+gist_token = auth_data["gist_token"]
 
 gh_api_url = "https://api.github.com"
 gh_url = "https://github.com"
@@ -36,13 +27,14 @@ usr_gh_url = gh_api_url + "/users/{0}".format(username)
 gist_name = "created from vscode"
 gist_content = "gists body sent from vscode"
 
-savedItems = os.path.join(os.path.dirname(__file__), "savedItems.cpio")
+savedItems = os.path.join(os.path.dirname(__file__), "tests", "test_paste.cpio")
 with open(savedItems, "r") as f:
     savedItems_data = f.read()
 savedItems_data = utils.encode_zlib_b64(savedItems_data)
 
-# gist_args = utils.format_gist(gist_name, True, "test_gists.py", gist_content)
-gist_args2 = utils.format_gist(gist_name, True, "test_gists.py", savedItems_data)
+gist_args2 = utils.format_gist_data("descritpion", True, "content_bite")
+print gist_args2
+print type(gist_args2)
 data = gist_args2
 
 """Create Gist"""

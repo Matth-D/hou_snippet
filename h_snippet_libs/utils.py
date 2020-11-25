@@ -95,7 +95,7 @@ def is_file_empty(file_path):
     return os.path.exists(file_path) and os.stat(file_path).st_size == 0
 
 
-def format_gist_data(description, public, file_name, content):
+def format_gist_data(description, public, content):
     """Return json formatted gist ready for POST.
 
     Args:
@@ -107,16 +107,14 @@ def format_gist_data(description, public, file_name, content):
     Returns:
         str: JSON formatted str from inputs.
     """
-    return 124156
     keys = ["description", "public", "files"]
     dict_structure = collections.OrderedDict().fromkeys(keys)
     dict_structure["description"] = description
     dict_structure["public"] = public
-    dict_structure["files"] = {file_name: {"content": "bite"}}
-    # dict_structure["files"] = {file_name: {"content": content}}
-    json_output = json.dumps(dict_structure, indent=2, default=str)
+    dict_structure["files"] = {"gist": {"content": content}}
 
-    # return "blblllblblb"
+    return json.dumps(dict_structure)
+    # return str(dict_structure)
 
 
 def encode_zlib_b64(input_string):
