@@ -23,7 +23,6 @@ class HSnippet(QtWidgets.QDialog):
         super(HSnippet, self).__init__()
         self.setAttribute(QtCore.Qt.WA_DeleteOnClose, True)
         self.setObjectName("mdev_H_snippet_main_window")
-        self.clipboard_content = "Default Clipboard"
         self.init_ui()
         self.setGeometry(300, 300, self.app_size[0], self.app_size[1])
         self.center_window()
@@ -85,10 +84,7 @@ class HSnippet(QtWidgets.QDialog):
         # Signals and connect
         self.create_snippet_btn.clicked.connect(self.snippet.create_snippet_network)
         self.send_snippet_btn.clicked.connect(self.snippet.send_snippet_to_clipboard)
-        self.import_snippet_btn.clicked.connect(self.get_clipboard_content)
-        self.import_snippet_btn.clicked.connect(
-            self.snippet.import_snippet_from_clipboard(self.get_clipboard_content)
-        )
+        self.import_snippet_btn.clicked.connect(self.send_clipboard_to_snippet)
         # TODO: fix error return without exception set
 
         # Appearance
@@ -101,11 +97,14 @@ class HSnippet(QtWidgets.QDialog):
         self.setProperty("houdiniStyle", True)
         self.setStyleSheet(hou.ui.qtStyleSheet())
 
-    def get_clipboard_content(self):
-        self.clipboard_content = "prout"
-        return self.clipboard_content
-        # cb = QtGui.QGuiApplication.clipboard()
-        # self.clipboard_content = cb.text()
+    def send_clipboard_to_snippet(self):
+        # self.clipboard_content = "prout"
+        cb = QtGui.QGuiApplication.clipboard().text()
+        if "https://" not in cb:
+            hou.ui.displayMessage("Text in clipboard is not a link.")
+            return
+        # Do clipboard check here
+        self.snippet.import_snippet_from_clipboard(cb)
 
     def center_window(self):
         """Centers window on screen."""

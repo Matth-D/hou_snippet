@@ -106,6 +106,9 @@ class GitTransfer:
         os.close(self.fd)
         os.remove(self.content_file)
 
+    def import_snippet(self, *args, **kwargs):
+        pass
+
     def get_gist_data(self, gist_url):
         pass
 
@@ -194,12 +197,14 @@ class Snippet:
         snippet_subnet = obj_context.createNode("subnet")
         snippet_subnet.setName(snippet_name)
         snippet_subnet.setColor(hou.Color(0, 0, 0))
+
         if HOU_VER >= 16:
             snippet_subnet.setUserData("nodeshape", "wave")
         destination_node = snippet_subnet
 
         if selection_type == "Object":
             selection.setName("container_" + input_name)
+
         if selection_type == "Sop":
             destination_node = snippet_subnet.createNode("geo")
             destination_node.setName("container_" + input_name)
@@ -234,5 +239,10 @@ class Snippet:
         self.transfer.send_snippet(snippet_node=selection)
 
     def import_snippet_from_clipboard(self, clipboard):
-        test = clipboard
-        print test
+        """Method connected to UI's import snippet from clipboard button.
+
+        Args:
+            clipboard (str): String content of clipboard.
+        """
+
+        self.transfer.import_snippet(clipboard)

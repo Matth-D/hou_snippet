@@ -7,7 +7,7 @@ import sys
 import urllib
 import urllib2
 
-# import hou
+import hou
 
 program = os.path.dirname(__file__)
 auth_file = os.path.join(program, "auth.json")
