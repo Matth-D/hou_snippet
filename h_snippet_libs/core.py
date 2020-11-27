@@ -5,7 +5,6 @@ import json
 import os
 import sys
 import tempfile
-import urllib
 import urllib2
 
 import hou
@@ -20,6 +19,14 @@ with open(auth_file_path, "r") as auth_file:
 HOME = utils.get_home()
 HOU_VER = hou.applicationVersion()[0]
 SEP = utils.SEP
+
+
+class LocalTransfer:
+    def send_snippet(self):
+        pass
+
+    def get_snippet(self):
+        pass
 
 
 class GitTransfer:
@@ -107,23 +114,27 @@ class GitTransfer:
         os.remove(self.content_file)
 
     def import_snippet(self, *args, **kwargs):
+        # get clipboard link
+        # check clipboard link move the check process in a method here
+        # extract data and decode it, description(username, date, snippet_name) from gist
+        # store gist on disk (in .h_snippet/received)
+        # delete snippet
+        # create subnetwork in obj context
+        # load content from file stored on disc
+        # update tree view?
+
+        pass
+
+    def is_link_valid(self):
+        pass
+
+    def extract_data(self):
         pass
 
     def get_gist_data(self, gist_url):
         pass
 
-    def import_snippet(self, gist_url):
-        pass
-
     def delete_snippet(self):
-        pass
-
-
-class LocalTransfer:
-    def send_snippet(self):
-        pass
-
-    def get_snippet(self):
         pass
 
 
