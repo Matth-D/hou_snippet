@@ -28,9 +28,10 @@ request = urllib2.Request(shorturl)
 # request = HeadRequest(shorturl)
 request.add_header("User-Agent", "Magic Browser")
 response = urllib2.urlopen(request)
+print response.read()
 # response_dict = json.loads(response.read())
 # content = response_dict["files"]["gist"]["content"]
-print timeit.timeit(response.geturl, number=1000000)
+# print timeit.timeit(response.geturl, number=1000000)
 # print response.geturl()
 
 # test.geturl()

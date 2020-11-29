@@ -17,7 +17,7 @@ with open(auth_file, "r") as auth_file:
 
 CUTTLY_TOKEN = AUTH_DATA["cuttly_token"]
 SEP = r"$#!--%"
-# HOU_VER = hou.applicationVersion()[0]
+HOU_VER = hou.applicationVersion()[0]
 
 
 def get_home():
@@ -30,6 +30,8 @@ def get_home():
     if sys.version_info.major == 2 and home == os.path.expanduser("~"):
         home = os.environ.get("USERPROFILE")
         return home
+    if not home:
+        return os.path.expanduser("~")
 
 
 def is_snippet(selection):

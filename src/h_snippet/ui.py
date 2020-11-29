@@ -98,13 +98,8 @@ class HSnippet(QtWidgets.QDialog):
         self.setStyleSheet(hou.ui.qtStyleSheet())
 
     def send_clipboard_to_snippet(self):
-        # self.clipboard_content = "prout"
         cb = QtGui.QGuiApplication.clipboard().text()
-        if "https://" not in cb:
-            hou.ui.displayMessage("Text in clipboard is not a link.")
-            return
-        # Do clipboard check here
-        self.snippet.import_snippet_from_clipboard(cb)
+        self.snippet.import_snippet_from_clipboard(str(cb))
 
     def center_window(self):
         """Centers window on screen."""

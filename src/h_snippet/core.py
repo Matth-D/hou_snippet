@@ -42,6 +42,7 @@ class GitTransfer:
         self.content_file = None
         self.content = None
         self.created_url = None
+        self.import_url = None
 
     def create_content(self, snippet):
         """Save serialized item to temporary file.
@@ -103,8 +104,7 @@ class GitTransfer:
         hou.ui.copyTextToClipboard(input_string)
 
     def send_snippet(self, **kwargs):
-        """Method gathering all the different processes to send serialized node to gist.
-        """
+        """Method gathering all the different processes to send serialized node to gist."""
         self.snippet_node = kwargs.pop("snippet_node", None)
         self.create_content(self.snippet_node)
         self.create_gist_data(self.username, self.snippet_name, self.content)
@@ -114,8 +114,12 @@ class GitTransfer:
         os.remove(self.content_file)
 
     def import_snippet(self, *args, **kwargs):
+        """Method gathering all the different processes to import gist url in Houdini."""
         # get clipboard link
         # check clipboard link move the check process in a method here
+        self.import_url = kwargs.pop("clipboard_string", None)
+        if not self.is_link_valid(self.import_url):
+            return
         # extract data and decode it, description(username, date, snippet_name) from gist
         # store gist on disk (in .h_snippet/received)
         # delete snippet
@@ -125,8 +129,36 @@ class GitTransfer:
 
         pass
 
-    def is_link_valid(self):
-        pass
+    def is_link_valid(self, url):
+        """Check if link imported from clipboard is valid and points to a gist.
+
+        Args:
+            url (str): String imported from clipboard.
+
+        Returns:
+            bool : True or False and set the instance variable of imported link.
+        """
+        print url
+        print type(url)
+        if not url:
+            hou.ui.displayMessage("Clipboard is empty")
+            return False
+        if "https://" not in url:
+            hou.ui.displayMessage("Clipboard content not a url link.")
+            return False
+        request = urllib2.Request(url)
+        request.add_header("User-Agent", "Magic Browser")
+        response = urllib2.urlopen(request)
+        if response.getcode() >= 400:
+            hou.ui.displayMessage("Url server issue")
+            return False
+        response_url = response.geturl()
+        self.import_url = response_url
+        if "github.com/gists" not in response_url:
+            hou.ui.displayMessage("Url not pointing to a snippet file")
+            return False
+        print "lien valide sa mere"
+        return True
 
     def extract_data(self):
         pass
@@ -178,8 +210,7 @@ class Snippet:
             json.dump({"username": self.username}, user_file, indent=4)
 
     def initialize_transfer(self):
-        """Set the appropriate transfer method based on switch_transfer_method variable.
-        """
+        """Set the appropriate transfer method based on switch_transfer_method variable."""
 
         self.transfer = LocalTransfer()
         if self.switch_transfer_method:
@@ -237,8 +268,7 @@ class Snippet:
         hou.copyNodesTo(selection, destination_node)
 
     def send_snippet_to_clipboard(self):
-        """Method connected to UI's send snippet to clipboard button.
-        """
+        """Method connected to UI's send snippet to clipboard button."""
         selection = utils.get_selection(0)
 
         if not selection or not utils.is_snippet(selection):
@@ -256,4 +286,8 @@ class Snippet:
             clipboard (str): String content of clipboard.
         """
 
-        self.transfer.import_snippet(clipboard)
+        # self.transfer.import_snippet(clipboard_string=clipboard)
+        request = urllib2.Request(clipboard)
+        request.add_header("User-Agent", "Magic Browser")
+        response = urllib2.urlopen(request)
+        print response.read()
