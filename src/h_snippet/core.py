@@ -5,9 +5,9 @@ import json
 import os
 import sys
 import tempfile
-import urllib2
 
 import hou
+import urllib2
 
 from . import utils
 
@@ -19,6 +19,7 @@ with open(auth_file_path, "r") as auth_file:
 HOME = utils.get_home()
 HOU_VER = hou.applicationVersion()[0]
 SEP = utils.SEP
+CERTIF_FILE = utils.CERTIF_FILE
 
 
 class LocalTransfer:
@@ -43,6 +44,7 @@ class GitTransfer:
         self.content = None
         self.created_url = None
         self.import_url = None
+        self.response = None
 
     def create_content(self, snippet):
         """Save serialized item to temporary file.
@@ -84,7 +86,7 @@ class GitTransfer:
             "{0}:{1}".format(AUTH_DATA["username"], AUTH_DATA["gist_token"])
         )
         request.add_header("Authorization", "Basic {0}".format(b64str))
-        response = urllib2.urlopen(request)
+        response = urllib2.urlopen(request, cafile=CERTIF_FILE)
 
         if response.getcode() >= 400:
             hou.ui.displayMessage("Could not connect to server")
@@ -120,6 +122,7 @@ class GitTransfer:
         self.import_url = kwargs.pop("clipboard_string", None)
         if not self.is_link_valid(self.import_url):
             return
+        self.extract_data()
         # extract data and decode it, description(username, date, snippet_name) from gist
         # store gist on disk (in .h_snippet/received)
         # delete snippet
@@ -138,8 +141,6 @@ class GitTransfer:
         Returns:
             bool : True or False and set the instance variable of imported link.
         """
-        print url
-        print type(url)
         if not url:
             hou.ui.displayMessage("Clipboard is empty")
             return False
@@ -148,7 +149,7 @@ class GitTransfer:
             return False
         request = urllib2.Request(url)
         request.add_header("User-Agent", "Magic Browser")
-        response = urllib2.urlopen(request)
+        response = urllib2.urlopen(request, cafile=CERTIF_FILE)
         if response.getcode() >= 400:
             hou.ui.displayMessage("Url server issue")
             return False
@@ -157,7 +158,7 @@ class GitTransfer:
         if "github.com/gists" not in response_url:
             hou.ui.displayMessage("Url not pointing to a snippet file")
             return False
-        print "lien valide sa mere"
+        self.response = response
         return True
 
     def extract_data(self):
@@ -286,8 +287,8 @@ class Snippet:
             clipboard (str): String content of clipboard.
         """
 
-        # self.transfer.import_snippet(clipboard_string=clipboard)
-        request = urllib2.Request(clipboard)
-        request.add_header("User-Agent", "Magic Browser")
-        response = urllib2.urlopen(request)
-        print response.read()
+        self.transfer.import_snippet(clipboard_string=clipboard)
+        # request = urllib2.Request(clipboard)
+        # request.add_header("User-Agent", "Magic Browser")
+        # response = urllib2.urlopen(request, cafile=CERTIF_FILE)
+        # print response.read()

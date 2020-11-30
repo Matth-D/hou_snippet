@@ -5,9 +5,19 @@ import os
 import platform
 import sys
 import urllib
-import urllib2
 
 import hou
+import urllib2
+
+h_snippet = os.path.dirname(__file__)
+src = os.path.dirname(h_snippet)
+h_snippet_repo = os.path.dirname(src)
+libs = os.path.join(h_snippet_repo, "libs")
+
+if libs not in sys.path:
+    sys.path.append(libs)
+
+import certifi
 
 program = os.path.dirname(__file__)
 auth_file = os.path.join(program, "auth.json")
@@ -18,6 +28,7 @@ with open(auth_file, "r") as auth_file:
 CUTTLY_TOKEN = AUTH_DATA["cuttly_token"]
 SEP = r"$#!--%"
 HOU_VER = hou.applicationVersion()[0]
+CERTIF_FILE = certifi.where()
 
 
 def get_home():

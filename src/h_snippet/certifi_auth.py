@@ -1,10 +1,11 @@
-import sys
-import urllib2
 import os
+import ssl
+import sys
 
-# import ssl
+import urllib2
+import utils
 
-# ssl._create_default_https_context = ssl._create_unverified_context
+ssl._create_default_https_context = ssl._create_unverified_context
 
 
 h_snippet = os.path.dirname(__file__)
@@ -26,3 +27,4 @@ request = urllib2.Request(shorturl)
 request.add_header("User-Agent", "Magic Browser")
 response = urllib2.urlopen(request, cafile=cert_file)
 print response.read()
+
