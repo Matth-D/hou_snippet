@@ -45,6 +45,7 @@ class GitTransfer:
         self.created_url = None
         self.import_url = None
         self.response = None
+        self.description = None
 
     def create_content(self, snippet):
         """Save serialized item to temporary file.
@@ -68,9 +69,11 @@ class GitTransfer:
             snippet_name (str): Name of snippet to send.
             content (str): Serialized node data.
         """
-        description = utils.create_file_name(snippet_name, username)
-        content = utils.encode_zlib_b64(content)
-        self.gist_data = utils.format_gist_data(description, self.public, content)
+        self.description = utils.create_file_name(snippet_name, username)
+        self.content = utils.encode_zlib_b64(content)
+        self.gist_data = utils.format_gist_data(
+            self.description, self.public, self.content
+        )
 
     def gist_request(self, payload):
         """Make request through github's gist api to store the snippet.
@@ -162,7 +165,9 @@ class GitTransfer:
         return True
 
     def extract_data(self):
-        pass
+        self.gist_data = json.loads(self.response.read())
+        self.description = self.gist_data["description"]
+        self.content = utils.decode_zlib_b64(self.gist_data["files"]["gist"]["content"])
 
     def get_gist_data(self, gist_url):
         pass
