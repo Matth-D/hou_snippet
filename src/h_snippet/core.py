@@ -43,6 +43,7 @@ class GitTransfer:
         self.content_file = None
         self.content = None
         self.created_url = None
+        self.snippet_folder = None
         self.import_url = None
         self.response = None
         self.description = None
@@ -123,17 +124,36 @@ class GitTransfer:
         # get clipboard link
         # check clipboard link move the check process in a method here
         self.import_url = kwargs.pop("clipboard_string", None)
+        self.snippet_folder = kwargs.pop("snippet_folder", None)
         if not self.is_link_valid(self.import_url):
             return
         self.extract_data()
-        # extract data and decode it, description(username, date, snippet_name) from gist
-        # store gist on disk (in .h_snippet/received)
+        self.store_snippet()
+
         # delete snippet
         # create subnetwork in obj context
         # load content from file stored on disc
         # update tree view?
 
         pass
+
+    def delete_snippet(self):
+        request_method = "DELETE"
+        b64str = base64.b64encode(
+            "{0}:{1}".format(AUTH_DATA["username"], AUTH_DATA["gist_token"])
+        )
+        request = urllib2.Request(self.import_url)
+        request.add_header("Authorization", "Basic {0}".format(b64str))
+        request.get_method = lambda: request_method
+        response = urllib2.urlopen(request)
+
+    def store_snippet(self):
+        self.content_file = os.path.join(
+            self.snippet_folder, self.description + ".json"
+        )
+
+        with open(snippet_path, "w") as snippet_f:
+            snippet_f.write(self.content)
 
     def is_link_valid(self, url):
         """Check if link imported from clipboard is valid and points to a gist.
@@ -169,9 +189,6 @@ class GitTransfer:
         self.description = self.gist_data["description"]
         self.content = utils.decode_zlib_b64(self.gist_data["files"]["gist"]["content"])
 
-    def get_gist_data(self, gist_url):
-        pass
-
     def delete_snippet(self):
         pass
 
@@ -181,6 +198,9 @@ class Snippet:
         # super(Snippet, self).__init__()
         self.h_snippet_path = os.path.join(HOME, ".h_snippet")
         self.user_file_path = os.path.join(self.h_snippet_path, "user.json")
+        self.snippet_received_path = os.path.join(
+            self.h_snippet_path, "snippets_received"
+        )
         self.username = None
         self.local_transfer_switch = None
         self.initialize_user_folder()
@@ -193,9 +213,8 @@ class Snippet:
         if not os.path.exists(self.h_snippet_path):
             os.mkdir(self.h_snippet_path)
 
-        snippet_received_path = os.path.join(self.h_snippet_path, "snippets_received")
-        if not os.path.exists(snippet_received_path):
-            os.mkdir(snippet_received_path)
+        if not os.path.exists(self.snippet_received_path):
+            os.mkdir(self.snippet_received_path)
 
         if os.path.exists(self.user_file_path):
             with open(self.user_file_path, "r") as user_file:
@@ -292,7 +311,9 @@ class Snippet:
             clipboard (str): String content of clipboard.
         """
 
-        self.transfer.import_snippet(clipboard_string=clipboard)
+        self.transfer.import_snippet(
+            clipboard_string=clipboard, snippet_folder=self.snippet_received_path
+        )
         # request = urllib2.Request(clipboard)
         # request.add_header("User-Agent", "Magic Browser")
         # response = urllib2.urlopen(request, cafile=CERTIF_FILE)

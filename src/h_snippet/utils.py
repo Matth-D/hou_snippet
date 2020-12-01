@@ -3,6 +3,8 @@ import datetime
 import json
 import os
 import platform
+import random
+import string
 import sys
 import urllib
 
@@ -85,7 +87,10 @@ def create_file_name(snippet_name, username):
         str: Local snippet filename.
     """
     date = datetime.datetime.today().strftime("%d-%m-%Y")
-    components = (snippet_name, username, date)
+    rand_string = "".join(
+        random.choice(string.ascii_letters + string.digits) for i in range(10)
+    )
+    components = (snippet_name, username, date, rand_string)
     return str(SEP.join(components))
 
 
@@ -178,27 +183,51 @@ def shorten_url(url):
     Returns:
         str: Shortened url.
     """
-    request_url = "http://cutt.ly/api/api.php?" + urllib.urlencode(
-        {"short": url, "key": CUTTLY_TOKEN}
-    )
+    request_url = "http://tinyurl.com/api-create.php?" + urllib.urlencode({"url": url})
     request = urllib2.Request(request_url)
     request.add_header("User-Agent", "Magic Browser")
     response = urllib2.urlopen(request)
-
     if response.getcode() >= 400:
-        request_url = "http://tinyurl.com/api-create.php?" + urllib.urlencode(
-            {"url": url}
-        )
-        request = urllib2.Request(request_url)
-        response = urllib2.urlopen(request)
-        short_url = response.read()
-        return short_url
+        return url
 
     short_url = response.read()
-    short_url = json.loads(short_url)
-    short_url = str(short_url["url"]["shortLink"])
 
     if "https://" not in short_url:
         return url
 
     return short_url
+
+
+# def shorten_url(url):
+#     """Shorten the gist url.
+
+#     Args:
+#         url (str): Url to be shortened.
+
+#     Returns:
+#         str: Shortened url.
+#     """
+#     request_url = "http://cutt.ly/api/api.php?" + urllib.urlencode(
+#         {"short": url, "key": CUTTLY_TOKEN}
+#     )
+#     request = urllib2.Request(request_url)
+#     request.add_header("User-Agent", "Magic Browser")
+#     response = urllib2.urlopen(request)
+
+#     if response.getcode() >= 400:
+#         request_url = "http://tinyurl.com/api-create.php?" + urllib.urlencode(
+#             {"url": url}
+#         )
+#         request = urllib2.Request(request_url)
+#         response = urllib2.urlopen(request)
+#         short_url = response.read()
+#         return short_url
+
+#     short_url = response.read()
+#     short_url = json.loads(short_url)
+#     short_url = str(short_url["url"]["shortLink"])
+
+#     if "https://" not in short_url:
+#         return url
+
+#     return short_url
