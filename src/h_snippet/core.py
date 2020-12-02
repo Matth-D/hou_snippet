@@ -129,15 +129,19 @@ class GitTransfer:
             return
         self.extract_data()
         self.store_snippet()
-
-        # delete snippet
+        self.delete_snippet()
         # create subnetwork in obj context
         # load content from file stored on disc
         # update tree view?
 
+    def create_import_network(self):
+        """Create Snippet network to load imported gist content to."""
+        obj_context = hou.node("/obj")
         pass
 
     def delete_snippet(self):
+        """Delete imported gist from gist repo.
+        """
         request_method = "DELETE"
         b64str = base64.b64encode(
             "{0}:{1}".format(AUTH_DATA["username"], AUTH_DATA["gist_token"])
@@ -148,11 +152,13 @@ class GitTransfer:
         response = urllib2.urlopen(request)
 
     def store_snippet(self):
+        """Store snippet content on disk.
+        """
         self.content_file = os.path.join(
             self.snippet_folder, self.description + ".json"
         )
 
-        with open(snippet_path, "w") as snippet_f:
+        with open(self.content_file, "w") as snippet_f:
             snippet_f.write(self.content)
 
     def is_link_valid(self, url):
@@ -185,12 +191,11 @@ class GitTransfer:
         return True
 
     def extract_data(self):
+        """Extract gist data from gist url response.
+        """
         self.gist_data = json.loads(self.response.read())
         self.description = self.gist_data["description"]
         self.content = utils.decode_zlib_b64(self.gist_data["files"]["gist"]["content"])
-
-    def delete_snippet(self):
-        pass
 
 
 class Snippet:

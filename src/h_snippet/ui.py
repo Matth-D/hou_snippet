@@ -1,7 +1,6 @@
 """H_Snippet UI"""
 
 from PySide2 import QtCore, QtGui, QtWidgets
-
 import hou
 
 from . import core
@@ -78,14 +77,12 @@ class HSnippet(QtWidgets.QDialog):
 
         self.main_layout.addWidget(self.tab_widget)
 
-        # self.test_class = core.classTest()
         self.snippet = core.Snippet()
 
         # Signals and connect
         self.create_snippet_btn.clicked.connect(self.snippet.create_snippet_network)
         self.send_snippet_btn.clicked.connect(self.snippet.send_snippet_to_clipboard)
         self.import_snippet_btn.clicked.connect(self.send_clipboard_to_snippet)
-        # TODO: fix error return without exception set
 
         # Appearance
         self.create_snippet_btn.setMaximumWidth(self.app_size[0] * 0.55)
@@ -98,12 +95,12 @@ class HSnippet(QtWidgets.QDialog):
         self.setStyleSheet(hou.ui.qtStyleSheet())
 
     def send_clipboard_to_snippet(self):
+        """Get clipboard content and send it to snippet."""
         cb = QtGui.QGuiApplication.clipboard().text()
         self.snippet.import_snippet_from_clipboard(str(cb))
 
     def center_window(self):
         """Centers window on screen."""
-
         app_geo = self.frameGeometry()
         center_point = (
             QtGui.QGuiApplication.primaryScreen().availableGeometry().center()
@@ -113,6 +110,7 @@ class HSnippet(QtWidgets.QDialog):
 
 
 def main():
+    """UI main function."""
     main_window = hou.ui.mainQtWindow()
     for each in main_window.children():
         if each.objectName() == "mdev_H_snippet_main_window":
