@@ -137,6 +137,10 @@ class GitTransfer:
     def create_import_network(self):
         """Create Snippet network to load imported gist content to."""
         obj_context = hou.node("/obj")
+        snippet_subnet = obj_context.createNode("subnet")
+        snippet_subnet.setName(snippet_name)
+        snippet_subnet.setColor(hou.Color(0, 0, 0))
+        # FINISHTHATSHIT
         pass
 
     def delete_snippet(self):
