@@ -130,18 +130,21 @@ class GitTransfer:
         self.extract_data()
         self.store_snippet()
         self.delete_snippet()
-        # create subnetwork in obj context
-        # load content from file stored on disc
+        self.create_import_network()
         # update tree view?
 
     def create_import_network(self):
-        """Create Snippet network to load imported gist content to."""
+        """Create Snippet network and loads gist content to it."""
         obj_context = hou.node("/obj")
         snippet_subnet = obj_context.createNode("subnet")
+        snippet_name = self.description.split(SEP)[0]
+        if hou.node(obj_context.path() + "/" + snippet_name):
+            snippet_name = utils.new_name_duplicate(snippet_name)
         snippet_subnet.setName(snippet_name)
         snippet_subnet.setColor(hou.Color(0, 0, 0))
-        # FINISHTHATSHIT
-        pass
+        if HOU_VER >= 16:
+            snippet_subnet.setUserData("nodeshape", "wave")
+        # snippet_subnet.loadItemsFromFile(self.content_file)
 
     def delete_snippet(self):
         """Delete imported gist from gist repo.
@@ -158,12 +161,22 @@ class GitTransfer:
     def store_snippet(self):
         """Store snippet content on disk.
         """
-        self.content_file = os.path.join(
-            self.snippet_folder, self.description + ".json"
+        # self.content_file = os.path.join(
+        #     self.snippet_folder, self.description + ".cpio"
+        # )
+        self.content_file = r"{}".format(
+            os.path.join(self.snippet_folder, self.description + ".cpio")
         )
-
+        self.content_file = self.content_file.replace("\\", "/")
         with open(self.content_file, "w") as snippet_f:
             snippet_f.write(self.content)
+
+    def extract_data(self):
+        """Extract gist data from gist url response.
+        """
+        self.gist_data = json.loads(self.response.read())
+        self.description = self.gist_data["description"]
+        self.content = utils.decode_zlib_b64(self.gist_data["files"]["gist"]["content"])
 
     def is_link_valid(self, url):
         """Check if link imported from clipboard is valid and points to a gist.
@@ -172,7 +185,7 @@ class GitTransfer:
             url (str): String imported from clipboard.
 
         Returns:
-            bool : True or False and set the instance variable of imported link.
+            [bool] : True or False and set the instance variable of imported link.
         """
         if not url:
             hou.ui.displayMessage("Clipboard is empty")
@@ -193,13 +206,6 @@ class GitTransfer:
             return False
         self.response = response
         return True
-
-    def extract_data(self):
-        """Extract gist data from gist url response.
-        """
-        self.gist_data = json.loads(self.response.read())
-        self.description = self.gist_data["description"]
-        self.content = utils.decode_zlib_b64(self.gist_data["files"]["gist"]["content"])
 
 
 class Snippet:
@@ -271,6 +277,10 @@ class Snippet:
             return
 
         snippet_subnet = obj_context.createNode("subnet")
+        check_name = hou.node(obj_context.path() + "/" + snippet_name)
+        if check_name:
+            snippet_name = utils.new_name_duplicate(check_name)
+
         snippet_subnet.setName(snippet_name)
         snippet_subnet.setColor(hou.Color(0, 0, 0))
 

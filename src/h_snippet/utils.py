@@ -33,6 +33,22 @@ HOU_VER = hou.applicationVersion()[0]
 CERTIF_FILE = certifi.where()
 
 
+def new_name_duplicate(existing_node):
+    existing_node_name = existing_node.name()
+    context_path = existing_node.parent().path()
+    split_name = existing_node_name.split("_")
+    last_comp = str(split_name[-1])
+    new_name = None
+    if last_comp.isdigit():
+        new_digit = str(int(last_comp) + 1)
+        split_name[-1] = new_digit
+        new_name = "_".join(split_name)
+        check_node = hou.node(context_path + "/" + new_name)
+    #     return new_name
+    # new_name = node_name + "_1"
+    # return new_name
+
+
 def get_home():
     """Return home folder.
 
