@@ -1,4 +1,4 @@
-"""H_snippet Core module"""
+"""H_snippet Core module."""
 
 import base64
 import json
@@ -22,7 +22,7 @@ SEP = utils.SEP
 CERTIF_FILE = utils.CERTIF_FILE
 
 
-class LocalTransfer:
+class LocalTransfer(object):
     def send_snippet(self):
         pass
 
@@ -30,7 +30,7 @@ class LocalTransfer:
         pass
 
 
-class GitTransfer:
+class GitTransfer(object):
     def __init__(self, *args, **kwargs):
         self.gh_api_url = "https://api.github.com"
         self.gist_api_url = self.gh_api_url + "/gists"
@@ -56,10 +56,9 @@ class GitTransfer:
         """
         self.snippet_name = snippet.name()
         self.fd, self.content_file = tempfile.mkstemp(suffix=".cpio")
-        # When figured out implement switch with saveChildrenToFile() function
         snippet.saveItemsToFile(snippet.children(), self.content_file, False)
 
-        with open(self.content_file, "r") as f:
+        with open(self.content_file, "rb") as f:
             self.content = f.read()
 
     def create_gist_data(self, username, snippet_name, content):
@@ -109,9 +108,9 @@ class GitTransfer:
         """
         hou.ui.copyTextToClipboard(input_string)
 
-    def send_snippet(self, **kwargs):
-        """Method gathering all the different processes to send serialized node to gist."""
-        self.snippet_node = kwargs.pop("snippet_node", None)
+    def send_snippet(self, snippet_node):
+        """Gather all the different processes to send serialized node to gist."""
+        self.snippet_node = snippet_node
         self.create_content(self.snippet_node)
         self.create_gist_data(self.username, self.snippet_name, self.content)
         self.gist_request(self.gist_data)
@@ -121,8 +120,6 @@ class GitTransfer:
 
     def import_snippet(self, *args, **kwargs):
         """Method gathering all the different processes to import gist url in Houdini."""
-        # get clipboard link
-        # check clipboard link move the check process in a method here
         self.import_url = kwargs.pop("clipboard_string", None)
         self.snippet_folder = kwargs.pop("snippet_folder", None)
         if not self.is_link_valid(self.import_url):
@@ -136,15 +133,15 @@ class GitTransfer:
     def create_import_network(self):
         """Create Snippet network and loads gist content to it."""
         obj_context = hou.node("/obj")
-        snippet_subnet = obj_context.createNode("subnet")
         snippet_name = self.description.split(SEP)[0]
-        if hou.node(obj_context.path() + "/" + snippet_name):
-            snippet_name = utils.new_name_duplicate(snippet_name)
-        snippet_subnet.setName(snippet_name)
+        snippet_subnet = obj_context.createNode("subnet", node_name=snippet_name)
+        # if hou.node(obj_context.path() + "/" + snippet_name):
+        #     snippet_name = utils.new_name_duplicate(snippet_name)
+        # snippet_subnet.setName(snippet_name)
         snippet_subnet.setColor(hou.Color(0, 0, 0))
         if HOU_VER >= 16:
             snippet_subnet.setUserData("nodeshape", "wave")
-        # snippet_subnet.loadItemsFromFile(self.content_file)
+        snippet_subnet.loadItemsFromFile(self.content_file)
 
     def delete_snippet(self):
         """Delete imported gist from gist repo.
@@ -168,7 +165,7 @@ class GitTransfer:
             os.path.join(self.snippet_folder, self.description + ".cpio")
         )
         self.content_file = self.content_file.replace("\\", "/")
-        with open(self.content_file, "w") as snippet_f:
+        with open(self.content_file, "wb") as snippet_f:
             snippet_f.write(self.content)
 
     def extract_data(self):
@@ -208,7 +205,7 @@ class GitTransfer:
         return True
 
 
-class Snippet:
+class Snippet(object):
     def __init__(self):
         # super(Snippet, self).__init__()
         self.h_snippet_path = os.path.join(HOME, ".h_snippet")
@@ -219,7 +216,7 @@ class Snippet:
         self.username = None
         self.local_transfer_switch = None
         self.initialize_user_folder()
-        self.switch_transfer_method = 1
+        self.switch_transfer_method = 0
         self.transfer = None
         self.initialize_transfer()
 
@@ -246,15 +243,15 @@ class Snippet:
             hou.ui.displayMessage("Please enter a valid username")
             sys.exit(1)
 
-        with open(self.user_file_path, "w") as user_file:
+        with open(self.user_file_path, "wb") as user_file:
             json.dump({"username": self.username}, user_file, indent=4)
 
     def initialize_transfer(self):
         """Set the appropriate transfer method based on switch_transfer_method variable."""
 
-        self.transfer = LocalTransfer()
+        self.transfer = GitTransfer(username=self.username)
         if self.switch_transfer_method:
-            self.transfer = GitTransfer(username=self.username)
+            self.transfer = LocalTransfer()
 
     def create_snippet_network(self):
         """Create snippet subnetwork at /obj level for user selection"""
@@ -276,12 +273,7 @@ class Snippet:
             hou.ui.displayMessage("Please enter a snippet name")
             return
 
-        snippet_subnet = obj_context.createNode("subnet")
-        check_name = hou.node(obj_context.path() + "/" + snippet_name)
-        if check_name:
-            snippet_name = utils.new_name_duplicate(check_name)
-
-        snippet_subnet.setName(snippet_name)
+        snippet_subnet = obj_context.createNode("subnet", node_name=snippet_name)
         snippet_subnet.setColor(hou.Color(0, 0, 0))
 
         if HOU_VER >= 16:
@@ -321,7 +313,7 @@ class Snippet:
             )
             return
 
-        self.transfer.send_snippet(snippet_node=selection)
+        self.transfer.send_snippet(selection)
 
     def import_snippet_from_clipboard(self, clipboard):
         """Method connected to UI's import snippet from clipboard button.
