@@ -158,9 +158,6 @@ class GitTransfer(object):
     def store_snippet(self):
         """Store snippet content on disk.
         """
-        # self.content_file = os.path.join(
-        #     self.snippet_folder, self.description + ".cpio"
-        # )
         self.content_file = r"{}".format(
             os.path.join(self.snippet_folder, self.description + ".cpio")
         )
@@ -325,7 +322,27 @@ class Snippet(object):
         self.transfer.import_snippet(
             clipboard_string=clipboard, snippet_folder=self.snippet_received_path
         )
-        # request = urllib2.Request(clipboard)
-        # request.add_header("User-Agent", "Magic Browser")
-        # response = urllib2.urlopen(request, cafile=CERTIF_FILE)
-        # print response.read()
+
+
+class SnippetTreeCore(object):
+    def __init__(self):
+        pass
+
+    def get_snippets_infos(self, snippet_folder_path):
+
+        snippet_list = []
+
+        if not snippet_folder_path:
+            hou.ui.displayMessage(
+                "Couldn't find snippet folder, should be located in user/.h_snippet/snippet_received"
+            )
+            return
+        for snippet in os.listdir(snippet_folder_path):
+            snippet_path = os.path.join(snippet_folder_path, snippet)
+            infos = os.path.splitext(snippet)[0].split(SEP)
+            infos.remove(infos[-1])
+            infos += [snippet_path]
+            snippet_list.append(infos)
+
+        return snippet_list
+

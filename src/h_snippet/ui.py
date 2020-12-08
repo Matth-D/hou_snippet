@@ -11,8 +11,25 @@ class SnippetTree(QtWidgets.QTreeWidget):
 
     def __init__(self, *args, **kwargs):
         super(SnippetTree, self).__init__()
+        self.snippet_folder = kwargs.pop("snippet_folder", None)
         self.header().setSectionResizeMode(QtWidgets.QHeaderView.ResizeToContents)
-        self.setHeaderLabels(["Snippet Name", "From", "Date Received"])
+        self.setHeaderLabels(["Snippet Name", "From", "Date Received", "Path"])
+        self.snippet_core = core.SnippetTreeCore()
+        self.snippet_list = None
+        self.set_snippet_list()
+        self.fill_tree()
+        self.setColumnHidden(3, True)
+
+    def set_snippet_list(self):
+        self.snippet_list = self.snippet_core.get_snippets_infos(self.snippet_folder)
+
+    def fill_tree(self):
+        for snippet in self.snippet_list:
+            item = QtWidgets.QTreeWidgetItem(self)
+            item.setText(0, snippet[0])
+            item.setText(1, snippet[1])
+            item.setText(2, snippet[2])
+            item.setText(3, snippet[3])
 
 
 class HSnippet(QtWidgets.QDialog):
@@ -31,8 +48,8 @@ class HSnippet(QtWidgets.QDialog):
         """Init UI Layout."""
         self.screen_size = QtGui.QGuiApplication.primaryScreen().availableGeometry()
         self.app_size = (
-            round(self.screen_size.width() * 0.25),
-            round(self.screen_size.height() * 0.2),
+            round(self.screen_size.width() * 0.35),
+            round(self.screen_size.height() * 0.28),
         )
         self.main_layout = QtWidgets.QVBoxLayout(self)
         self.setLayout(self.main_layout)
@@ -49,7 +66,6 @@ class HSnippet(QtWidgets.QDialog):
             "Import Snippet from Clipboard", self
         )
 
-        self.snippet_tree = SnippetTree()
         self.library_import_btn = QtWidgets.QPushButton("Import From Library", self)
         self.library_delete_btn = QtWidgets.QPushButton("Delete From Library", self)
         self.layout_v1 = QtWidgets.QVBoxLayout()
@@ -70,14 +86,17 @@ class HSnippet(QtWidgets.QDialog):
         self.snippet_tab.setLayout(self.layout_v1)
         self.library_tab.setLayout(self.layout_v2)
 
+        self.snippet = core.Snippet()
+        self.snippet_tree = SnippetTree(
+            snippet_folder=self.snippet.snippet_received_path
+        )
+
         self.layout_v2.addWidget(self.snippet_tree)
         self.layout_v2.addLayout(self.layout_h1)
         self.layout_h1.addWidget(self.library_import_btn)
         self.layout_h1.addWidget(self.library_delete_btn)
 
         self.main_layout.addWidget(self.tab_widget)
-
-        self.snippet = core.Snippet()
 
         # Signals and connect
         self.create_snippet_btn.clicked.connect(self.snippet.create_snippet_network)

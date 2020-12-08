@@ -1,24 +1,24 @@
-node_list = ["node", "node_1", "node_2"]
+import os
+
+snippet_folder = r"C:\Users\Matthieu\.h_snippet\snippets_received"
+
+SEP = "$#!--%"
 
 
-# node_name = "node"
-# if node_name in node_list:  # check if node already exists, use path here
-#     i = 1
-#     new_name = node_name + "_" + str(i)
-#     while new_name in node_list:
-#         i += 1
+def get_snippet_list():
 
-name = "node"
-basename = "node"
-i = 1
-while name in node_list:
+    snippet_list = []
 
-    name = basename + "_" + str(i)
-    i += 1
-print name
+    for snippet in os.listdir(snippet_folder):
+        snippet_path = os.path.join(snippet_folder, snippet)
+        infos = os.path.splitext(snippet)[0].split(SEP)
+        infos.remove(infos[-1])
+        infos += [snippet_path]
+        snippet_list.append(infos)
+
+    return snippet_list
 
 
-# i = 1
-# while i < 5:
-#     i += 1
-# print i
+snippet_list = get_snippet_list()
+
+print snippet_list
