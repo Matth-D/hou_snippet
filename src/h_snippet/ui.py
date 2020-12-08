@@ -5,6 +5,8 @@ import hou
 
 from . import core
 
+#
+
 
 class SnippetTree(QtWidgets.QTreeWidget):
     """Snippet Tree custom Widget."""
