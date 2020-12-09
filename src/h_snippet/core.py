@@ -127,21 +127,19 @@ class GitTransfer(object):
         self.extract_data()
         self.store_snippet()
         self.delete_snippet()
-        self.create_import_network()
+        self.create_import_network(self.content_file)
         # update tree view?
 
-    def create_import_network(self):
+    def create_import_network(self, snippet_file):
         """Create Snippet network and loads gist content to it."""
         obj_context = hou.node("/obj")
-        snippet_name = self.description.split(SEP)[0]
+        snippet_name = os.path.basename(snippet_file)
+        snippet_name = str(os.path.splitext(snippet_name)[0].split(SEP)[0])
         snippet_subnet = obj_context.createNode("subnet", node_name=snippet_name)
-        # if hou.node(obj_context.path() + "/" + snippet_name):
-        #     snippet_name = utils.new_name_duplicate(snippet_name)
-        # snippet_subnet.setName(snippet_name)
         snippet_subnet.setColor(hou.Color(0, 0, 0))
         if HOU_VER >= 16:
             snippet_subnet.setUserData("nodeshape", "wave")
-        snippet_subnet.loadItemsFromFile(self.content_file)
+        snippet_subnet.loadItemsFromFile()
 
     def delete_snippet(self):
         """Delete imported gist from gist repo.
@@ -215,6 +213,7 @@ class Snippet(object):
         self.initialize_user_folder()
         self.switch_transfer_method = 0
         self.transfer = None
+        self.is_internet = 1
         self.initialize_transfer()
 
     def initialize_user_folder(self):
@@ -247,6 +246,8 @@ class Snippet(object):
         """Set the appropriate transfer method based on switch_transfer_method variable."""
 
         self.transfer = GitTransfer(username=self.username)
+        if not self.switch_transfer_method and not utils.check_internet():
+            self.is_internet = 0
         if self.switch_transfer_method:
             self.transfer = LocalTransfer()
 

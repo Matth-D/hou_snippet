@@ -5,6 +5,7 @@ import os
 import platform
 import random
 import string
+import subprocess
 import sys
 import urllib
 
@@ -44,7 +45,7 @@ def check_internet():
     if os_name != "windows":
         ping_cmd = "ping -c 1 8.8.8.8 -t 1"
 
-    response = os.system(ping_cmd)
+    response = subprocess.call(ping_cmd.split(" "), shell=True)
 
     if response == 0:
         return True
