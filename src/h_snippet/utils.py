@@ -33,6 +33,25 @@ HOU_VER = hou.applicationVersion()[0]
 CERTIF_FILE = certifi.where()
 
 
+def check_internet():
+    """Check internet access.
+
+    Returns:
+        [bool]: True or False depending on internet access.
+    """
+    os_name = platform.system().lower()
+    ping_cmd = "ping -n 1 8.8.8.8 -w 1"
+    if os_name != "windows":
+        ping_cmd = "ping -c 1 8.8.8.8 -t 1"
+
+    response = os.system(ping_cmd)
+
+    if response == 0:
+        return True
+    else:
+        return False
+
+
 def new_name_duplicate(existing_node):
     existing_node_name = existing_node.name()
     context_path = existing_node.parent().path()
