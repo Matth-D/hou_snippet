@@ -21,6 +21,9 @@ DEV PLANNING ON H_SNIPPET TOOL.
         <!-- - Inherit send snippet and get snippet methods from transfer classes depending on switch.  -->
           <!-- Leaving room to make the tool local. See dependency injection. -->
 
+    -add a test if no internet connection
+        -if not internet connection no buttons on the ui and just a warning message. Make only Library accessible.
+
 -------- UI
 
     <!-- - One tab called "Snippet" with 3 buttons:  -->
@@ -28,6 +31,7 @@ DEV PLANNING ON H_SNIPPET TOOL.
         <!-- - Button Send Snippet to Clipboard. -->
         <!-- - Button Import Snippet from Clipboard. -->
     - One tab called "Library":
+        -Get clicked item. get clicked item path
         - List view listing all snippets in .h_snippet folder.
             - columns : Snippet name, sender username, date received.
         - Import button. Import clicked snippet
@@ -39,9 +43,6 @@ DEV PLANNING ON H_SNIPPET TOOL.
     <!-- - Create file name for gist from snippet's name, user and today's date. -->
 
 -------- NOTES
-    Find less generic name for program folder
-    h_snippet executable > repo/bin/h_snippet.py
-    same for cache_deleter
 
     Snippet I/O:
         Send:
