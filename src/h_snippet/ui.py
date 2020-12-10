@@ -21,6 +21,8 @@ class SnippetTree(QtWidgets.QTreeWidget):
         self.setColumnHidden(3, True)
 
     def fill_tree(self):
+        """Fill H_snippet tree widget with snippet folder content."""
+
         snippet_list = self.snippet_core.get_snippets_infos(self.snippet_folder)
         for snippet in snippet_list:
             item = QtWidgets.QTreeWidgetItem(self)
@@ -79,6 +81,7 @@ class HSnippet(QtWidgets.QDialog):
 
         self.snippet = core.Snippet()
 
+        # Don't draw buttons if GitTransfer and no internet
         if self.snippet.is_internet:
             self.layout_v1.addLayout(self.layout_v1_h1)
             self.layout_v1.addLayout(self.layout_v1_h2)
@@ -131,12 +134,14 @@ class HSnippet(QtWidgets.QDialog):
         self.selected_snippet = str(item.data(3, 0))
 
     def create_library_snippet(self):
+        """Create snippet network from local snippet file."""
         if not os.path.exists(self.selected_snippet):
             hou.ui.displayMessage("File is not present on disk.")
             return
         self.snippet.transfer.create_import_network(self.selected_snippet)
 
     def remove_library_snippet(self):
+        """Delete selected snippet file in tree widget."""
         if not os.path.exists(self.selected_snippet):
             hou.ui.displayMessage("File is not present on disk.")
             return
@@ -147,8 +152,8 @@ class HSnippet(QtWidgets.QDialog):
 
     def send_clipboard_to_snippet(self):
         """Get clipboard content and send it to snippet."""
-        cb = QtGui.QGuiApplication.clipboard().text()
-        self.snippet.import_snippet_from_clipboard(str(cb))
+        clipboard = QtGui.QGuiApplication.clipboard().text()
+        self.snippet.import_snippet_from_clipboard(str(clipboard))
 
     def center_window(self):
         """Centers window on screen."""

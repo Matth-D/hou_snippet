@@ -23,15 +23,29 @@ CERTIF_FILE = utils.CERTIF_FILE
 
 
 class LocalTransfer(object):
+    """Class left blank for local transfer.
+
+    Args:
+        object (obj): object.
+    """
+
     def send_snippet(self):
+        """Send snippet through local network."""
         pass
 
     def get_snippet(self):
+        """Get snippet from local network."""
         pass
 
 
 class GitTransfer(object):
-    def __init__(self, *args, **kwargs):
+    """Send snippet through Gist.
+
+    Args:
+        object (]): [description]
+    """
+
+    def __init__(self, **kwargs):
         self.gh_api_url = "https://api.github.com"
         self.gist_api_url = self.gh_api_url + "/gists"
         self.snippet_node = None
@@ -58,8 +72,8 @@ class GitTransfer(object):
         self.fd, self.content_file = tempfile.mkstemp(suffix=".cpio")
         snippet.saveItemsToFile(snippet.children(), self.content_file, False)
 
-        with open(self.content_file, "rb") as f:
-            self.content = f.read()
+        with open(self.content_file, "rb") as content_file:
+            self.content = content_file.read()
 
     def create_gist_data(self, username, snippet_name, content):
         """Format serialized node data to fit gist requirements.
@@ -118,7 +132,7 @@ class GitTransfer(object):
         os.close(self.fd)
         os.remove(self.content_file)
 
-    def import_snippet(self, *args, **kwargs):
+    def import_snippet(self, **kwargs):
         """Method gathering all the different processes to import gist url in Houdini."""
         self.import_url = kwargs.pop("clipboard_string", None)
         self.snippet_folder = kwargs.pop("snippet_folder", None)
@@ -142,8 +156,7 @@ class GitTransfer(object):
         snippet_subnet.loadItemsFromFile()
 
     def delete_snippet(self):
-        """Delete imported gist from gist repo.
-        """
+        """Delete imported gist from gist repo."""
         request_method = "DELETE"
         b64str = base64.b64encode(
             "{0}:{1}".format(AUTH_DATA["username"], AUTH_DATA["gist_token"])
@@ -154,8 +167,7 @@ class GitTransfer(object):
         response = urllib2.urlopen(request)
 
     def store_snippet(self):
-        """Store snippet content on disk.
-        """
+        """Store snippet content on disk."""
         self.content_file = r"{}".format(
             os.path.join(self.snippet_folder, self.description + ".cpio")
         )
@@ -164,8 +176,7 @@ class GitTransfer(object):
             snippet_f.write(self.content)
 
     def extract_data(self):
-        """Extract gist data from gist url response.
-        """
+        """Extract gist data from gist url response."""
         self.gist_data = json.loads(self.response.read())
         self.description = self.gist_data["description"]
         self.content = utils.decode_zlib_b64(self.gist_data["files"]["gist"]["content"])
@@ -346,4 +357,3 @@ class SnippetTreeCore(object):
             snippet_list.append(infos)
 
         return snippet_list
-
