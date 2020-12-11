@@ -82,6 +82,7 @@ class HSnippet(QtWidgets.QDialog):
         self.snippet = core.Snippet()
 
         # Don't draw buttons if GitTransfer and no internet
+        print self.snippet.is_internet
         if self.snippet.is_internet:
             self.layout_v1.addLayout(self.layout_v1_h1)
             self.layout_v1.addLayout(self.layout_v1_h2)

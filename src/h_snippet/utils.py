@@ -41,22 +41,19 @@ def check_internet():
         [bool]: True or False depending on internet access.
     """
     os_name = platform.system().lower()
-    ping_cmd = "ping -n 1 8.8.8.8 -w 1"
-    if os_name != "windows":
-        ping_cmd = "ping -c 1 8.8.8.8 -t 1"
+    param_attempt = "-n" if platform.system().lower() == "windows" else "-c"
+    param_timeout = "-w" if platform.system().lower() == "windows" else "-t"
+    cmd = [
+        "ping",
+        param_attempt,
+        "1",
+        "8.8.8.8",
+        param_timeout,
+        "1",
+    ]
+    response = subprocess.call(cmd, shell=False)
 
-    response = subprocess.call(ping_cmd.split(" "), shell=True)
-
-    if response == 0:
-        return True
-    else:
-        return False
-
-
-def new_name_duplicate(existing_node):
-    existing_node_name = existing_node.name()
-    context_path = existing_node.parent().path()
-    split_name = existing_node_name.split("_")
+    return response == 0
 
 
 def get_home():
