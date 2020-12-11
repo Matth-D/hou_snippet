@@ -153,7 +153,7 @@ class GitTransfer(object):
         snippet_subnet.setColor(hou.Color(0, 0, 0))
         if HOU_VER >= 16:
             snippet_subnet.setUserData("nodeshape", "wave")
-        snippet_subnet.loadItemsFromFile()
+        snippet_subnet.loadItemsFromFile(snippet_file)
 
     def delete_snippet(self):
         """Delete imported gist from gist repo."""
