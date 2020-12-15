@@ -60,12 +60,16 @@ class HSnippet(QtWidgets.QDialog):
         self.library_tab = QtWidgets.QWidget()
         self.tab_widget.addTab(self.snippet_tab, "Snippet")
         self.tab_widget.addTab(self.library_tab, "Library")
+        self.snippet = core.Snippet()
 
-        self.create_snippet_btn = QtWidgets.QPushButton("Create Snippet", self)
-        self.send_snippet_btn = QtWidgets.QPushButton("Send Snippet to Clipboard", self)
-        self.import_snippet_btn = QtWidgets.QPushButton(
-            "Import Snippet from Clipboard", self
-        )
+        if self.snippet.is_internet:
+            self.create_snippet_btn = QtWidgets.QPushButton("Create Snippet", self)
+            self.send_snippet_btn = QtWidgets.QPushButton(
+                "Send Snippet to Clipboard", self
+            )
+            self.import_snippet_btn = QtWidgets.QPushButton(
+                "Import Snippet from Clipboard", self
+            )
         self.no_internet_label = QtWidgets.QLabel(
             "Please connect your machine to the internet and restart H_snippet."
         )
@@ -79,19 +83,17 @@ class HSnippet(QtWidgets.QDialog):
         self.layout_v2 = QtWidgets.QVBoxLayout()
         self.layout_h1 = QtWidgets.QHBoxLayout()
 
-        self.snippet = core.Snippet()
-
         # Don't draw buttons if GitTransfer and no internet
         if self.snippet.is_internet:
             self.layout_v1.addLayout(self.layout_v1_h1)
             self.layout_v1.addLayout(self.layout_v1_h2)
             self.layout_v1.addLayout(self.layout_v1_h3)
+
+            self.layout_v1_h1.addWidget(self.create_snippet_btn)
+            self.layout_v1_h2.addWidget(self.send_snippet_btn)
+            self.layout_v1_h3.addWidget(self.import_snippet_btn)
         else:
             self.layout_v1.addWidget(self.no_internet_label)
-
-        self.layout_v1_h1.addWidget(self.create_snippet_btn)
-        self.layout_v1_h2.addWidget(self.send_snippet_btn)
-        self.layout_v1_h3.addWidget(self.import_snippet_btn)
 
         self.snippet_tab.setLayout(self.layout_v1)
         self.library_tab.setLayout(self.layout_v2)

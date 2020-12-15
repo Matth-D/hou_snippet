@@ -287,10 +287,8 @@ class Snippet(object):
 
         if HOU_VER >= 16:
             snippet_subnet.setUserData("nodeshape", "wave")
-        destination_node = snippet_subnet
 
-        if selection_type == "Object":
-            selection.setName("container_" + input_name)
+        destination_node = snippet_subnet
 
         if selection_type == "Sop":
             destination_node = snippet_subnet.createNode("geo")
