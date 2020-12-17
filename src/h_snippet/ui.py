@@ -44,6 +44,7 @@ class HSnippet(QtWidgets.QDialog):
         self.center_window()
         self.setParent(hou.ui.mainQtWindow(), QtCore.Qt.Window)
         self.selected_snippet = None
+        self.setWindowFlags(QtCore.Qt.Tool)
 
     def init_ui(self):
         """Init UI Layout."""

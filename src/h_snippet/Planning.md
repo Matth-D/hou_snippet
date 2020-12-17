@@ -21,8 +21,9 @@ DEV PLANNING ON H_SNIPPET TOOL.
         <!-- - Inherit send snippet and get snippet methods from transfer classes depending on switch.  -->
           <!-- Leaving room to make the tool local. See dependency injection. -->
 
-    -add a test if no internet connection
-        -if not internet connection no buttons on the ui and just a warning message. Make only Library accessible.
+    <!-- -add a test if no internet connection -->
+        <!-- -if not internet connection no buttons on the ui and just a warning message. Make only Library accessible. -->
+
 
 -------- UI
 
@@ -30,11 +31,12 @@ DEV PLANNING ON H_SNIPPET TOOL.
         <!-- - Button Create Snippet from Selection. -->
         <!-- - Button Send Snippet to Clipboard. -->
         <!-- - Button Import Snippet from Clipboard. -->
-    - One tab called "Library":
+    <!-- - One tab called "Library":
         -Get clicked item. get clicked item path
-        - List view listing all snippets in .h_snippet folder.
-            - columns : Snippet name, sender username, date received.
-        - Import button. Import clicked snippet
+        <!-- - List view listing all snippets in .h_snippet folder. -->
+            <!-- - columns : Snippet name, sender username, date received. -->
+        <!-- - Import button. Import clicked snippet --> -->
+    -find a way to keep window on top
 
 -------- UTILS
 

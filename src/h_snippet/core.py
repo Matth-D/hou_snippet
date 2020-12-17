@@ -302,7 +302,7 @@ class Snippet(object):
             destination_node = snippet_subnet.createNode("ropnet")
             destination_node.setName("container_" + input_name)
 
-        snippet_verif = snippet_subnet.createNode("null")
+        snippet_verif = snippet_subnet.createNode("subnet")
         snippet_verif.setName("snippet_verification")
         snippet_verif.setDisplayFlag(False)
         snippet_verif.hide(True)
