@@ -25,6 +25,41 @@ DEV PLANNING ON H_SNIPPET TOOL.
         <!-- -if not internet connection no buttons on the ui and just a warning message. Make only Library accessible. -->
 
 
+    -Handle url not found error in code. Example log:
+        "Traceback (most recent call last):
+  File "D:\GIT\h_snippet\src\h_snippet\ui.py", line 159, in send_clipboard_to_snippet
+    self.snippet.import_snippet_from_clipboard(str(clipboard))
+  File "D:\GIT\h_snippet\src\h_snippet\core.py", line 333, in import_snippet_from_clipboard
+    clipboard_string=clipboard, snippet_folder=self.snippet_received_path
+  File "D:\GIT\h_snippet\src\h_snippet\core.py", line 139, in import_snippet
+    if not self.is_link_valid(self.import_url):
+  File "D:\GIT\h_snippet\src\h_snippet\core.py", line 201, in is_link_valid
+    response = urllib2.urlopen(request, cafile=CERTIF_FILE)
+  File "C:\PROGRA~1\SIDEEF~1\HOUDIN~1.173\python27\lib\urllib2.py", line 154, in urlopen
+    return opener.open(url, data, timeout)
+  File "C:\PROGRA~1\SIDEEF~1\HOUDIN~1.173\python27\lib\urllib2.py", line 435, in open
+    response = meth(req, response)
+  File "C:\PROGRA~1\SIDEEF~1\HOUDIN~1.173\python27\lib\urllib2.py", line 548, in http_response
+    'http', request, response, code, msg, hdrs)
+  File "C:\PROGRA~1\SIDEEF~1\HOUDIN~1.173\python27\lib\urllib2.py", line 467, in error
+    result = self._call_chain(*args)
+  File "C:\PROGRA~1\SIDEEF~1\HOUDIN~1.173\python27\lib\urllib2.py", line 407, in _call_chain
+    result = func(*args)
+  File "C:\PROGRA~1\SIDEEF~1\HOUDIN~1.173\python27\lib\urllib2.py", line 654, in http_error_302
+    return self.parent.open(new, timeout=req.timeout)
+  File "C:\PROGRA~1\SIDEEF~1\HOUDIN~1.173\python27\lib\urllib2.py", line 435, in open
+    response = meth(req, response)
+  File "C:\PROGRA~1\SIDEEF~1\HOUDIN~1.173\python27\lib\urllib2.py", line 548, in http_response
+    'http', request, response, code, msg, hdrs)
+  File "C:\PROGRA~1\SIDEEF~1\HOUDIN~1.173\python27\lib\urllib2.py", line 473, in error
+    return self._call_chain(*args)
+  File "C:\PROGRA~1\SIDEEF~1\HOUDIN~1.173\python27\lib\urllib2.py", line 407, in _call_chain
+    result = func(*args)
+  File "C:\PROGRA~1\SIDEEF~1\HOUDIN~1.173\python27\lib\urllib2.py", line 556, in http_error_default
+    raise HTTPError(req.get_full_url(), code, msg, hdrs, fp)
+urllib2.HTTPError: HTTP Error 404: Not Found"
+
+
 -------- UI
 
     <!-- - One tab called "Snippet" with 3 buttons:  -->

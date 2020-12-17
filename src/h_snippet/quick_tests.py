@@ -1,16 +1,7 @@
-import os
-import platform
+import urllib
 
+import urllib2
 
-def check_internet():
-    os_name = platform.system().lower()
-    ping_cmd = "ping -n 1 8.8.8.8 -w 1"
-    if os_name != "windows":
-        ping_cmd = "ping -c 1 8.8.8.8 -t 1"
+ghost_url = "https://api.github.com/gists/42dcd615b5c8ed1bd38b765788f1c895"
 
-    response = os.system(ping_cmd)
-
-    if response == 0:
-        return True
-    else:
-        return False
+40019
