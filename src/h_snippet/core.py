@@ -142,7 +142,6 @@ class GitTransfer(object):
         self.store_snippet()
         self.delete_snippet()
         self.create_import_network(self.content_file)
-        # update tree view?
 
     def create_import_network(self, snippet_file):
         """Create Snippet network and loads gist content to it."""
@@ -196,9 +195,16 @@ class GitTransfer(object):
         if "https://" not in url:
             hou.ui.displayMessage("Clipboard content not a url link.")
             return False
-        request = urllib2.Request(url)
-        request.add_header("User-Agent", "Magic Browser")
-        response = urllib2.urlopen(request, cafile=CERTIF_FILE)
+        try:
+            request = urllib2.Request(url)
+            request.add_header("User-Agent", "Magic Browser")
+            response = urllib2.urlopen(request, cafile=CERTIF_FILE)
+        except urllib2.HTTPError:
+            hou.ui.displayMessage(
+                "Url link is not valid or encountered a HTTP error. Please try again."
+            )
+            return False
+
         if response.getcode() >= 400:
             hou.ui.displayMessage("Url server issue")
             return False
