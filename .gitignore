@@ -116,6 +116,7 @@ tempCodeRunnerFile.py
 #project specific
 testing
 Planning.md
+*.ui
 deleting_folder
 *.DS_Store
 config/settings.json
