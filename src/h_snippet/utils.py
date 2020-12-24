@@ -219,38 +219,3 @@ def shorten_url(url):
         return url
 
     return short_url
-
-
-# def shorten_url(url):
-#     """Shorten the gist url.
-
-#     Args:
-#         url (str): Url to be shortened.
-
-#     Returns:
-#         str: Shortened url.
-#     """
-#     request_url = "http://cutt.ly/api/api.php?" + urllib.urlencode(
-#         {"short": url, "key": CUTTLY_TOKEN}
-#     )
-#     request = urllib2.Request(request_url)
-#     request.add_header("User-Agent", "Magic Browser")
-#     response = urllib2.urlopen(request)
-
-#     if response.getcode() >= 400:
-#         request_url = "http://tinyurl.com/api-create.php?" + urllib.urlencode(
-#             {"url": url}
-#         )
-#         request = urllib2.Request(request_url)
-#         response = urllib2.urlopen(request)
-#         short_url = response.read()
-#         return short_url
-
-#     short_url = response.read()
-#     short_url = json.loads(short_url)
-#     short_url = str(short_url["url"]["shortLink"])
-
-#     if "https://" not in short_url:
-#         return url
-
-#     return short_url
