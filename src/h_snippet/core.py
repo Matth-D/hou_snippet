@@ -39,11 +39,7 @@ class LocalTransfer(object):
 
 
 class GitTransfer(object):
-    """Send snippet through Gist.
-
-    Args:
-        object (]): [description]
-    """
+    """Send snippet through Gist."""
 
     def __init__(self, **kwargs):
         self.gh_api_url = "https://api.github.com"
@@ -163,7 +159,7 @@ class GitTransfer(object):
         request = urllib2.Request(self.import_url)
         request.add_header("Authorization", "Basic {0}".format(b64str))
         request.get_method = lambda: request_method
-        response = urllib2.urlopen(request)
+        response = urllib2.urlopen(request, cafile=CERTIF_FILE)
 
     def store_snippet(self):
         """Store snippet content on disk."""
@@ -282,7 +278,7 @@ class Snippet(object):
         snippet_name_prompt = hou.ui.readInput("Enter snippet name:", ("OK", "Cancel"))
         input_name = snippet_name_prompt[1]
         input_name = input_name.replace(" ", "_")
-        snippet_name = "snippet_" + input_name
+        snippet_name = "spt" + input_name
 
         if not snippet_name:
             hou.ui.displayMessage("Please enter a snippet name")
