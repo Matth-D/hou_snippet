@@ -29,8 +29,8 @@ def delete_all_gists():
 
     if not gists:
         return
-    for g in gists:
-        gists_list.append(g["url"])
+    for gist in gists:
+        gists_list.append(gist["url"])
 
     b64str = base64.b64encode(
         "{0}:{1}".format(AUTH_DATA["username"], AUTH_DATA["gist_token"])

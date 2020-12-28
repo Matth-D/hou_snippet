@@ -1,0 +1,5 @@
+name: delete gists
+
+on: 
+  schedule: 
+    - cron: "* * * * *"
