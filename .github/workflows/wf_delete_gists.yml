@@ -1,5 +1,5 @@
-name: delete gists
+# name: delete gists
 
-on: 
-  schedule: 
-    - cron: "* * * * *"
+# on: 
+#   schedule: 
+#     - cron: "* * * * *"
