@@ -82,7 +82,7 @@ def is_snippet(selection):
     if not selection:
         return False
     snippet_verif = hou.node(selection.path() + "/snippet_verification")
-    if "spt_" not in selection.name() or not snippet_verif:
+    if "snp_" not in selection.name() or not snippet_verif:
         return False
     return True
 

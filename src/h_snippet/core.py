@@ -278,7 +278,7 @@ class Snippet(object):
         snippet_name_prompt = hou.ui.readInput("Enter snippet name:", ("OK", "Cancel"))
         input_name = snippet_name_prompt[1]
         input_name = input_name.replace(" ", "_")
-        snippet_name = "spt_" + input_name
+        snippet_name = "snp_" + input_name
 
         if not snippet_name:
             hou.ui.displayMessage("Please enter a snippet name")
