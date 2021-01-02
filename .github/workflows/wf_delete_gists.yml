@@ -1,5 +1,13 @@
-# name: delete gists
+name: Delete Dists
 
-# on: 
-#   schedule: 
-#     - cron: "* * * * *"
+on: 
+  schedule: 
+    - cron: "* * * * *"
+  
+jobs:
+  build: 
+    runs-on: ubuntu-latest
+
+    steps:
+
+      #figure this out and then publish tool....
