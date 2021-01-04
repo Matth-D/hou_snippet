@@ -17,5 +17,4 @@ jobs:
       - name: clean gists
       with: 
         python-version: 2.7
-      # run: python /src/h_snippet/clean_gist.repo.py
-      run: python "print 1234"
+      run: python ./src/h_snippet/clean_gist.repo.py
