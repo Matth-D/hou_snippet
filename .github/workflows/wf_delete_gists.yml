@@ -1,25 +1,48 @@
-name: Delete Gists
+# name: Delete Gists
 
-on:
-  schedule: 
-    - cron: "* * * * *"
+# on:
+#   schedule: 
+#     - cron: "* * * * *"
   
+# jobs:
+#   build:
+
+#     runs-on: ubuntu-latest
+
+#     steps:
+#     - uses: actions/checkout@v2
+#     - name: Set up Python 2.7
+#       uses: actions/setup-python@v2
+#       with:
+#         # Semantic version range syntax or exact version of a Python version
+#         python-version: '2.7'
+#         # Optional - x64 or x86 architecture, defaults to x64
+#         architecture: 'x64'
+#     # You can test your matrix by printing the current Python version
+#     - name: Display Python version
+#       with:
+#         python-version : 2.7
+#       run: python ./src/h_snippet/clean_gist_repo.py
+name: Python package
+
+on: [push]
+
 jobs:
   build:
 
     runs-on: ubuntu-latest
+    strategy:
+      # You can use PyPy versions in python-version.
+      # For example, pypy2 and pypy3
+      matrix:
+        python-version: [2.7, 3.5, 3.6, 3.7, 3.8]
 
     steps:
     - uses: actions/checkout@v2
-    - name: Set up Python 2.7
+    - name: Set up Python ${{ matrix.python-version }}
       uses: actions/setup-python@v2
       with:
-        # Semantic version range syntax or exact version of a Python version
-        python-version: '2.7'
-        # Optional - x64 or x86 architecture, defaults to x64
-        architecture: 'x64'
+        python-version: ${{ matrix.python-version }}
     # You can test your matrix by printing the current Python version
     - name: Display Python version
-      with:
-        python-version : 2.7
-      run: python ./src/h_snippet/clean_gist_repo.py
+      run: python -c "import sys; print(sys.version)"
