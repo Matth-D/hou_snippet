@@ -1,20 +1,23 @@
 name: Delete Gists
 
-on: 
+on:
   schedule: 
     - cron: "* 5 * * *"
   
 jobs:
-  build: 
+  build:
+
     runs-on: ubuntu-latest
 
     steps:
-      - name: setup python
+    - uses: actions/checkout@v2
+    - name: Set up Python 2.7
       uses: actions/setup-python@v2
       with:
-        python-version: 2.7
-      
-      - name: clean gists
-      with: 
-        python-version: 2.7
-      run: py ./src/h_snippet/clean_gist.repo.py
+        # Semantic version range syntax or exact version of a Python version
+        python-version: '2.7'
+        # Optional - x64 or x86 architecture, defaults to x64
+        architecture: 'x64'
+    # You can test your matrix by printing the current Python version
+    - name: Display Python version
+      run: python -c "import sys; print(sys.version)"
