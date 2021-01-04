@@ -23,7 +23,7 @@
 #       with:
 #         python-version : 2.7
 #       run: python ./src/h_snippet/clean_gist_repo.py
-name: Python package
+name: Delete Gists
 
 on:
   schedule:
