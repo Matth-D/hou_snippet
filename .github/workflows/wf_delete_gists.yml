@@ -2,7 +2,7 @@ name: Delete Gists
 
 on:
   schedule: 
-    - cron: "* 5 * * *"
+    - cron: "* * * * *"
   
 jobs:
   build:
@@ -20,4 +20,6 @@ jobs:
         architecture: 'x64'
     # You can test your matrix by printing the current Python version
     - name: Display Python version
+      with:
+        python-version : 2.7
       run: python ./src/h_snippet/clean_gist_repo.py
