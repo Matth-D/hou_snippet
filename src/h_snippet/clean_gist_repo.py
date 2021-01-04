@@ -20,9 +20,9 @@ with open(auth_file_path, "r") as auth_file:
     AUTH_DATA = json.load(auth_file)
 CERTIF_FILE = certifi.where()
 
-print AUTH_DATA["username"]
-print AUTH_DATA["gist_token"]
-print CERTIF_FILE
+
+# figure out error 401 in github actions
+
 
 # def delete_all_gists():
 #     gists_url = "https://api.github.com/users/houdini-snippet/gists"
