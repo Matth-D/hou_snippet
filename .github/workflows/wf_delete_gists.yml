@@ -9,13 +9,13 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      # - name: setup python
-      # uses: actions/setup-python@v2
-      # with:
-      #   python-version: 2.7
+      - name: setup python
+      uses: actions/setup-python@v2
+      with:
+        python-version: 2.7
       
       - name: clean gists
       with: 
         python-version: 2.7
       run: |
-      python src/h_snippet/clean_gist.repo.py
+      python /src/h_snippet/clean_gist.repo.py
