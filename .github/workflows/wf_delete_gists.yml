@@ -18,4 +18,4 @@ jobs:
       with: 
         python-version: 2.7
       # run: python /src/h_snippet/clean_gist.repo.py
-      run: pythn "print "hello""
+      run: python "print 1234"
