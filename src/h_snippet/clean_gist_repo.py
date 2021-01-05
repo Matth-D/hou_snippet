@@ -24,6 +24,9 @@ CERTIF_FILE = certifi.where()
 
 # figure out error 401 in github actions
 
+print AUTH_DATA["gist_token"]
+print AUTH_DATA["username"]
+
 
 # def delete_all_gists():
 #     gists_url = "https://api.github.com/users/houdini-snippet/gists"
@@ -51,11 +54,19 @@ CERTIF_FILE = certifi.where()
 # delete_all_gists()
 
 
-def open_google():
+def delete_all_gists():
+    gists_url = "https://api.github.com/users/houdini-snippet/gists"
+    gists_response = urllib2.urlopen(gists_url, cafile=CERTIF_FILE)
+    gists = json.loads(gists_response.read())
+    gists_list = []
 
-    url = "https://google.com"
-    response = urllib2.urlopen(url)
-    print response.read()
+    if not gists:
+        return
+    for gist in gists:
+        gists_list.append(gist["url"])
+
+    print gists_list
+    return
 
 
-open_google()
+delete_all_gists()
