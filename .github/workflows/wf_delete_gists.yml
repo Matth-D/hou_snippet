@@ -21,5 +21,5 @@ jobs:
     - name: Display Python version
       run: python -c "import sys; print(sys.version)"
 
-    - name: run cleanup script
+    - name: Run cleanup script
       run: python ./src/h_snippet/clean_gist_repo.py
