@@ -1,13 +1,15 @@
 name: Python package
 
 on:
+  push:
+  pull_request:
   schedule:
     - cron: "* * * * *"
 
 jobs:
   build:
 
-    runs-on: windows-latest
+    runs-on: ubuntu-latest
 
     steps:
     - uses: actions/checkout@v2
@@ -18,7 +20,7 @@ jobs:
     # You can test your matrix by printing the current Python version
     - name: Display Python version
       run: python -c "import sys; print(sys.version)"
-    # - name: print some random stuff
-    #   run: python -c "print 1234"
+    - name: print some random stuff
+      run: python -c "print 1234"
     - name: run cleanup script
       run: python ./src/h_snippet/clean_gist_repo.py
