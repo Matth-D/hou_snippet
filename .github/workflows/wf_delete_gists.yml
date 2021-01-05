@@ -1,8 +1,8 @@
-name: Python package
+name: Delete Gists
 
 on:
-  push:
-  pull_request:
+  # push:
+  # pull_request:
   schedule:
     - cron: "* * * * *"
 
