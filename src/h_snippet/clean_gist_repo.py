@@ -1,4 +1,5 @@
 import base64
+import datetime
 import json
 import os
 import sys
@@ -21,20 +22,29 @@ with open(auth_file_path, "r") as auth_file:
     AUTH_DATA = json.load(auth_file)
 CERTIF_FILE = certifi.where()
 GIST_TOKEN = AUTH_DATA["gist_token"].decode("base64").decode("zlib")
+SEP = r"$#!--%"
 
 
 def delete_all_gists():
-    # gists_url = "https://api.github.com/users/{}/gists".format(AUTH_DATA["username"])
+    """Scan all gists and delete ones that are over 2 days old.
+    """
     gists_url = "https://api.github.com/users/{}/gists".format(AUTH_DATA["username"])
     gists_response = urllib2.urlopen(gists_url, cafile=CERTIF_FILE)
     gists = json.loads(gists_response.read())
+    today = datetime.datetime.today()
     gists_list = []
 
     if not gists:
         print "No gists found."
         return
+
     for gist in gists:
-        gists_list.append(gist["url"])
+        gist_date_str = str(gist["description"].split(SEP)[2])
+        gist_date_obj = datetime.datetime.strptime(gist_date_str, "%d-%m-%Y")
+        limit_date = today - datetime.timedelta(2)
+
+        if gist_date_obj < limit_date:
+            gists_list.append(gist["url"])
 
     b64str = base64.b64encode("{0}:{1}".format(AUTH_DATA["username"], GIST_TOKEN))
     request_method = "DELETE"
