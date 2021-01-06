@@ -16,6 +16,7 @@ from . import utils
 auth_file_path = os.path.join(os.path.dirname(__file__), "auth.json")
 with open(auth_file_path, "r") as auth_file:
     AUTH_DATA = json.load(auth_file)
+GIST_TOKEN = utils.decode_zlib_b64(AUTH_DATA["gist_token"])
 HOME = utils.get_home()
 HOU_VER = hou.applicationVersion()[0]
 SEP = utils.SEP
@@ -95,9 +96,7 @@ class GitTransfer(object):
             return
 
         request = urllib2.Request(self.gist_api_url, data=payload)
-        b64str = base64.b64encode(
-            "{0}:{1}".format(AUTH_DATA["username"], AUTH_DATA["gist_token"])
-        )
+        b64str = base64.b64encode("{0}:{1}".format(AUTH_DATA["username"], GIST_TOKEN))
         request.add_header("Authorization", "Basic {0}".format(b64str))
         response = urllib2.urlopen(request, cafile=CERTIF_FILE)
 
@@ -153,9 +152,7 @@ class GitTransfer(object):
     def delete_snippet(self):
         """Delete imported gist from gist repo."""
         request_method = "DELETE"
-        b64str = base64.b64encode(
-            "{0}:{1}".format(AUTH_DATA["username"], AUTH_DATA["gist_token"])
-        )
+        b64str = base64.b64encode("{0}:{1}".format(AUTH_DATA["username"], GIST_TOKEN))
         request = urllib2.Request(self.import_url)
         request.add_header("Authorization", "Basic {0}".format(b64str))
         request.get_method = lambda: request_method
