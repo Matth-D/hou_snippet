@@ -1,9 +1,8 @@
 name: Delete Gists
 
 on:
-  [push]
-  # schedule:
-  #   - cron: "* * * * *"
+  schedule:
+    - cron: "* * * * *"
 
 jobs:
   build:
