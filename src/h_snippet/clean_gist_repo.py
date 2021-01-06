@@ -23,7 +23,7 @@ CERTIF_FILE = certifi.where()
 
 
 def delete_all_gists():
-    gists_url = "https://api.github.com/users/houdini-snippet/gists"
+    gists_url = "https://api.github.com/users/{}/gists".format(AUTH_DATA["username"])
     gists_response = urllib2.urlopen(gists_url, cafile=CERTIF_FILE)
     gists = json.loads(gists_response.read())
     gists_list = []
