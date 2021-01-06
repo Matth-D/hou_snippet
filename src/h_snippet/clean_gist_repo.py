@@ -20,6 +20,7 @@ auth_file_path = os.path.join(os.path.dirname(__file__), "auth.json")
 with open(auth_file_path, "r") as auth_file:
     AUTH_DATA = json.load(auth_file)
 CERTIF_FILE = certifi.where()
+GIST_TOKEN = AUTH_DATA["gist_token"].decode("base64").decode("zlib")
 
 
 def delete_all_gists():
@@ -35,9 +36,7 @@ def delete_all_gists():
     for gist in gists:
         gists_list.append(gist["url"])
 
-    b64str = base64.b64encode(
-        "{0}:{1}".format(AUTH_DATA["username"], AUTH_DATA["gist_token"])
-    )
+    b64str = base64.b64encode("{0}:{1}".format(AUTH_DATA["username"], GIST_TOKEN))
     request_method = "DELETE"
     for url in gists_list:
         request = urllib2.Request(url)
