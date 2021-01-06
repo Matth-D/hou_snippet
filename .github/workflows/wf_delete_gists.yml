@@ -1,23 +1,24 @@
-# name: Delete Gists
+name: Delete Gists
 
-# on:
-#   schedule:
-#     - cron: "* * * * *"
+on:
+  [push]
+  # schedule:
+  #   - cron: "* * * * *"
 
-# jobs:
-#   build:
+jobs:
+  build:
 
-#     runs-on: ubuntu-latest
+    runs-on: ubuntu-latest
 
-#     steps:
-#     - uses: actions/checkout@v2
-#     - name: Set up Python ${{ matrix.python-version }}
-#       uses: actions/setup-python@v2
-#       with:
-#         python-version: 2.7
-#     # You can test your matrix by printing the current Python version
-#     - name: Display Python version
-#       run: python -c "import sys; print(sys.version)"
+    steps:
+    - uses: actions/checkout@v2
+    - name: Set up Python ${{ matrix.python-version }}
+      uses: actions/setup-python@v2
+      with:
+        python-version: 2.7
+    # You can test your matrix by printing the current Python version
+    - name: Display Python version
+      run: python -c "import sys; print(sys.version)"
 
-#     - name: Run cleanup script
-#       run: python ./src/h_snippet/clean_gist_repo.py
+    - name: Run cleanup script
+      run: python ./src/h_snippet/clean_gist_repo.
