@@ -29,6 +29,7 @@ def delete_all_gists():
     gists_list = []
 
     if not gists:
+        print "No gists found."
         return
     for gist in gists:
         gists_list.append(gist["url"])
