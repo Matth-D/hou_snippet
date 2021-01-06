@@ -120,3 +120,4 @@ h_snippet/*.ui
 deleting_folder
 *.DS_Store
 config/settings.json
+encode.py
