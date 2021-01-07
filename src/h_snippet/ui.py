@@ -7,9 +7,11 @@ import hou
 
 from . import core
 
+# TODO: Clean sefl in ui
+
 
 class HSnippet(QtWidgets.QDialog):
-    """H_Snippet UI main class"""
+    """H_Snippet UI main class."""
 
     def __init__(self):
         super(HSnippet, self).__init__()
@@ -158,7 +160,6 @@ class SnippetTree(QtWidgets.QTreeWidget):
 
     def fill_tree(self):
         """Fill H_snippet tree widget with snippet folder content."""
-
         snippet_list = self.snippet_core.get_snippets_infos(self.snippet_folder)
         for snippet in snippet_list:
             item = QtWidgets.QTreeWidgetItem(self)

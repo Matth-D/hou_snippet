@@ -8,22 +8,16 @@ import tempfile
 
 import hou
 import urllib2
+import utils
+import utils_hou
 
-from . import utils
-
-# CONSTANTS
-
-auth_file_path = os.path.join(os.path.dirname(__file__), "auth.json")
-with open(auth_file_path, "r") as auth_file:
-    AUTH_DATA = json.load(auth_file)
-GIST_TOKEN = utils.decode_zlib_b64(AUTH_DATA["gist_token"])
+GIST_TOKEN = utils.decode_zlib_b64(utils.AUTH_DATA["gist_token"])
 HOME = utils.get_home()
-HOU_VER = hou.applicationVersion()[0]
-SEP = utils.SEP
-CERTIF_FILE = utils.CERTIF_FILE
 
 
 class Snippet(object):
+    """Main Snippet class."""
+
     def __init__(self):
         # super(Snippet, self).__init__()
         self.h_snippet_path = os.path.join(HOME, ".h_snippet")
@@ -67,7 +61,6 @@ class Snippet(object):
 
     def initialize_transfer(self):
         """Set the appropriate transfer method based on switch_transfer_method variable."""
-
         self.transfer = GitTransfer(username=self.username)
         if not self.switch_transfer_method and not utils.check_internet():
             self.is_internet = 0
@@ -75,7 +68,7 @@ class Snippet(object):
             self.transfer = LocalTransfer()
 
     def create_snippet_network(self):
-        """Create snippet subnetwork at /obj level for user selection"""
+        """Create snippet subnetwork at /obj level for user selection."""
         selection = utils.get_selection(1)
 
         if not selection:
@@ -97,7 +90,7 @@ class Snippet(object):
         snippet_subnet = obj_context.createNode("subnet", node_name=snippet_name)
         snippet_subnet.setColor(hou.Color(0, 0, 0))
 
-        if HOU_VER >= 16:
+        if utils_hou.HOU_VER >= 16:
             snippet_subnet.setUserData("nodeshape", "wave")
 
         destination_node = snippet_subnet
@@ -123,27 +116,25 @@ class Snippet(object):
         hou.copyNodesTo(selection, destination_node)
 
     def send_snippet_to_clipboard(self):
-        """Method connected to UI's send snippet to clipboard button."""
+        """Connect core methods to send snippet to clipboard."""
         selection = utils.get_selection(0)
 
         if not selection or not utils.is_snippet(selection):
             hou.ui.displayMessage(
-                "Please select a snippet node network. Must be created with the H_Snippet shelf tool."
+                "Please select a snippet node network."
+                " Must be created with the H_Snippet shelf tool."
             )
             return
 
         self.transfer.send_snippet(selection)
 
     def import_snippet_from_clipboard(self, clipboard):
-        """Method connected to UI's import snippet from clipboard button.
+        """Connect core methods to import snippet from clipboard button.
 
         Args:
             clipboard (str): String content of clipboard.
         """
-
-        self.transfer.import_snippet(
-            clipboard_string=clipboard, snippet_folder=self.snippet_received_path
-        )
+        self.transfer.import_snippet(clipboard, self.snippet_received_path)
 
 
 class GitTransfer(object):
@@ -213,9 +204,11 @@ class GitTransfer(object):
             return
 
         request = urllib2.Request(self.gist_api_url, data=payload)
-        b64str = base64.b64encode("{0}:{1}".format(AUTH_DATA["username"], GIST_TOKEN))
-        request.add_header("Authorization", "Basic {0}".format(b64str))
-        response = urllib2.urlopen(request, cafile=CERTIF_FILE)
+        b64str = base64.b64encode(
+            "{}:{}".format(utils.AUTH_DATA["username"], GIST_TOKEN)
+        )
+        request.add_header("Authorization", "Basic {}".format(b64str))
+        response = urllib2.urlopen(request, cafile=utils.CERTIF_FILE)
 
         if response.getcode() >= 400:
             hou.ui.displayMessage("Could not connect to server")
@@ -234,10 +227,10 @@ class GitTransfer(object):
         """
         hou.ui.copyTextToClipboard(input_string)
 
-    def import_snippet(self, **kwargs):
-        """Method gathering all the different processes to import gist url in Houdini."""
-        self.import_url = kwargs.pop("clipboard_string", None)
-        self.snippet_folder = kwargs.pop("snippet_folder", None)
+    def import_snippet(self, clipboard_string, snippet_folder):
+        """Gather all the different processes to import gist url in Houdini."""
+        self.import_url = clipboard_string
+        self.snippet_folder = snippet_folder
         if not self.is_link_valid(self.import_url):
             return
         self.extract_data()
@@ -263,7 +256,7 @@ class GitTransfer(object):
         try:
             request = urllib2.Request(url)
             request.add_header("User-Agent", "Magic Browser")
-            response = urllib2.urlopen(request, cafile=CERTIF_FILE)
+            response = urllib2.urlopen(request, cafile=utils.CERTIF_FILE)
         except urllib2.HTTPError:
             hou.ui.displayMessage(
                 "Url link is not valid or encountered a HTTP error. Please try again."
@@ -299,30 +292,41 @@ class GitTransfer(object):
     def delete_snippet(self):
         """Delete imported gist from gist repo."""
         request_method = "DELETE"
-        b64str = base64.b64encode("{0}:{1}".format(AUTH_DATA["username"], GIST_TOKEN))
+        b64str = base64.b64encode(
+            "{}:{}".format(utils.AUTH_DATA["username"], GIST_TOKEN)
+        )
         request = urllib2.Request(self.import_url)
         request.add_header("Authorization", "Basic {0}".format(b64str))
         request.get_method = lambda: request_method
-        response = urllib2.urlopen(request, cafile=CERTIF_FILE)
+        _ = urllib2.urlopen(request, cafile=utils.CERTIF_FILE)
 
     def create_import_network(self, snippet_file):
         """Create Snippet network and loads gist content to it."""
         obj_context = hou.node("/obj")
         snippet_name = os.path.basename(snippet_file)
-        snippet_name = str(os.path.splitext(snippet_name)[0].split(SEP)[0])
+        snippet_name = str(os.path.splitext(snippet_name)[0].split(utils.SEP)[0])
         snippet_subnet = obj_context.createNode("subnet", node_name=snippet_name)
         snippet_subnet.setColor(hou.Color(0, 0, 0))
-        if HOU_VER >= 16:
+        if utils_hou.HOU_VER >= 16:
             snippet_subnet.setUserData("nodeshape", "wave")
         snippet_subnet.loadItemsFromFile(snippet_file)
 
 
 class SnippetTreeCore(object):
+    """Snippet tree view class."""
+
     def __init__(self):
         pass
 
     def get_snippets_infos(self, snippet_folder_path):
+        """Return snippet list with infos from snippets on disk.
 
+        Args:
+            snippet_folder_path (str): path to snippet folder.
+
+        Returns:
+            list: 2d array with snippet infos.
+        """
         snippet_list = []
 
         if not snippet_folder_path:
@@ -332,7 +336,7 @@ class SnippetTreeCore(object):
             return
         for snippet in os.listdir(snippet_folder_path):
             snippet_path = os.path.join(snippet_folder_path, snippet)
-            infos = os.path.splitext(snippet)[0].split(SEP)
+            infos = os.path.splitext(snippet)[0].split(utils.SEP)
             infos.remove(infos[-1])
             infos += [snippet_path]
             snippet_list.append(infos)
@@ -354,4 +358,3 @@ class LocalTransfer(object):
     def get_snippet(self):
         """Get snippet from local network."""
         pass
-
