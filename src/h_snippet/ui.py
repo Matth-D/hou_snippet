@@ -7,8 +7,6 @@ import hou
 
 from . import core
 
-# TODO: Clean sefl in ui
-
 
 class HSnippet(QtWidgets.QDialog):
     """H_Snippet UI main class."""

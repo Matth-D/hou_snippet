@@ -6,7 +6,8 @@ import sys
 import urllib
 
 import urllib2
-import utils
+
+from . import utils
 
 GIST_TOKEN = utils.decode_zlib_b64(utils.AUTH_DATA["gist_token"])
 

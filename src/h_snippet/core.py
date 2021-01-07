@@ -8,8 +8,8 @@ import tempfile
 
 import hou
 import urllib2
-import utils
-import utils_hou
+
+from . import utils, utils_hou
 
 GIST_TOKEN = utils.decode_zlib_b64(utils.AUTH_DATA["gist_token"])
 HOME = utils.get_home()
