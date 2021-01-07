@@ -20,4 +20,4 @@ jobs:
       run: python -c "import sys; print(sys.version)"
 
     - name: Run cleanup script
-      run: python ./src/h_snippet/clean_gist_repo.py
+      run: python ./src/h_snippet/delete_gists.py
