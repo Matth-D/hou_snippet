@@ -8,30 +8,6 @@ import hou
 from . import core
 
 
-class SnippetTree(QtWidgets.QTreeWidget):
-    """Snippet Tree custom Widget."""
-
-    def __init__(self, *args, **kwargs):
-        super(SnippetTree, self).__init__()
-        self.snippet_folder = kwargs.pop("snippet_folder", None)
-        self.header().setSectionResizeMode(QtWidgets.QHeaderView.ResizeToContents)
-        self.setHeaderLabels(["Snippet Name", "From", "Date Received", "Path"])
-        self.snippet_core = core.SnippetTreeCore()
-        self.fill_tree()
-        self.setColumnHidden(3, True)
-
-    def fill_tree(self):
-        """Fill H_snippet tree widget with snippet folder content."""
-
-        snippet_list = self.snippet_core.get_snippets_infos(self.snippet_folder)
-        for snippet in snippet_list:
-            item = QtWidgets.QTreeWidgetItem(self)
-            item.setText(0, snippet[0])
-            item.setText(1, snippet[1])
-            item.setText(2, snippet[2])
-            item.setText(3, snippet[3])
-
-
 class HSnippet(QtWidgets.QDialog):
     """H_Snippet UI main class"""
 
@@ -166,6 +142,30 @@ class HSnippet(QtWidgets.QDialog):
         )
         app_geo.moveCenter(center_point)
         self.move(app_geo.topLeft())
+
+
+class SnippetTree(QtWidgets.QTreeWidget):
+    """Snippet Tree custom Widget."""
+
+    def __init__(self, *args, **kwargs):
+        super(SnippetTree, self).__init__()
+        self.snippet_folder = kwargs.pop("snippet_folder", None)
+        self.header().setSectionResizeMode(QtWidgets.QHeaderView.ResizeToContents)
+        self.setHeaderLabels(["Snippet Name", "From", "Date Received", "Path"])
+        self.snippet_core = core.SnippetTreeCore()
+        self.fill_tree()
+        self.setColumnHidden(3, True)
+
+    def fill_tree(self):
+        """Fill H_snippet tree widget with snippet folder content."""
+
+        snippet_list = self.snippet_core.get_snippets_infos(self.snippet_folder)
+        for snippet in snippet_list:
+            item = QtWidgets.QTreeWidgetItem(self)
+            item.setText(0, snippet[0])
+            item.setText(1, snippet[1])
+            item.setText(2, snippet[2])
+            item.setText(3, snippet[3])
 
 
 def main():

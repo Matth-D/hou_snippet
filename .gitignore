@@ -121,3 +121,4 @@ deleting_folder
 *.DS_Store
 config/settings.json
 encode.py
+h_snippet_review

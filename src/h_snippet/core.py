@@ -23,193 +23,6 @@ SEP = utils.SEP
 CERTIF_FILE = utils.CERTIF_FILE
 
 
-class LocalTransfer(object):
-    """Class left blank for local transfer.
-
-    Args:
-        object (obj): object.
-    """
-
-    def send_snippet(self):
-        """Send snippet through local network."""
-        pass
-
-    def get_snippet(self):
-        """Get snippet from local network."""
-        pass
-
-
-class GitTransfer(object):
-    """Send snippet through Gist."""
-
-    def __init__(self, **kwargs):
-        self.gh_api_url = "https://api.github.com"
-        self.gist_api_url = self.gh_api_url + "/gists"
-        self.snippet_node = None
-        self.snippet_name = None
-        self.username = kwargs.pop("username", "default")
-        self.public = True  # Leaving public gist by default
-        self.gist_data = None
-        self.fd = None
-        self.content_file = None
-        self.content = None
-        self.created_url = None
-        self.snippet_folder = None
-        self.import_url = None
-        self.response = None
-        self.description = None
-
-    def create_content(self, snippet):
-        """Save serialized item to temporary file.
-
-        Args:
-            snippet (hou.node): Snippet node to serialize.
-        """
-        self.snippet_name = snippet.name()
-        self.fd, self.content_file = tempfile.mkstemp(suffix=".cpio")
-        snippet.saveItemsToFile(snippet.children(), self.content_file, False)
-
-        with open(self.content_file, "rb") as content_file:
-            self.content = content_file.read()
-
-    def create_gist_data(self, username, snippet_name, content):
-        """Format serialized node data to fit gist requirements.
-
-        Args:
-            username (str): Sender's username.
-            snippet_name (str): Name of snippet to send.
-            content (str): Serialized node data.
-        """
-        self.description = utils.create_file_name(snippet_name, username)
-        self.content = utils.encode_zlib_b64(content)
-        self.gist_data = utils.format_gist_data(
-            self.description, self.public, self.content
-        )
-
-    def gist_request(self, payload):
-        """Make request through github's gist api to store the snippet.
-
-        Args:
-            payload (str): Request data payload.
-        """
-        if not payload:
-            return
-
-        request = urllib2.Request(self.gist_api_url, data=payload)
-        b64str = base64.b64encode("{0}:{1}".format(AUTH_DATA["username"], GIST_TOKEN))
-        request.add_header("Authorization", "Basic {0}".format(b64str))
-        response = urllib2.urlopen(request, cafile=CERTIF_FILE)
-
-        if response.getcode() >= 400:
-            hou.ui.displayMessage("Could not connect to server")
-            return
-        response_content = response.read()
-        response_dict = json.loads(response_content)
-        url = response_dict["url"]
-        url = utils.shorten_url(url)
-        self.created_url = url
-
-    def string_to_clipboard(self, input_string):
-        """Use houdini method to send generated snippet's url to cliboard.
-
-        Args:
-            input_string (str): String to copy to clipboard. Would be use for snippet's url here.
-        """
-        hou.ui.copyTextToClipboard(input_string)
-
-    def send_snippet(self, snippet_node):
-        """Gather all the different processes to send serialized node to gist."""
-        self.snippet_node = snippet_node
-        self.create_content(self.snippet_node)
-        self.create_gist_data(self.username, self.snippet_name, self.content)
-        self.gist_request(self.gist_data)
-        self.string_to_clipboard(self.created_url)
-        os.close(self.fd)
-        os.remove(self.content_file)
-
-    def import_snippet(self, **kwargs):
-        """Method gathering all the different processes to import gist url in Houdini."""
-        self.import_url = kwargs.pop("clipboard_string", None)
-        self.snippet_folder = kwargs.pop("snippet_folder", None)
-        if not self.is_link_valid(self.import_url):
-            return
-        self.extract_data()
-        self.store_snippet()
-        self.delete_snippet()
-        self.create_import_network(self.content_file)
-
-    def create_import_network(self, snippet_file):
-        """Create Snippet network and loads gist content to it."""
-        obj_context = hou.node("/obj")
-        snippet_name = os.path.basename(snippet_file)
-        snippet_name = str(os.path.splitext(snippet_name)[0].split(SEP)[0])
-        snippet_subnet = obj_context.createNode("subnet", node_name=snippet_name)
-        snippet_subnet.setColor(hou.Color(0, 0, 0))
-        if HOU_VER >= 16:
-            snippet_subnet.setUserData("nodeshape", "wave")
-        snippet_subnet.loadItemsFromFile(snippet_file)
-
-    def delete_snippet(self):
-        """Delete imported gist from gist repo."""
-        request_method = "DELETE"
-        b64str = base64.b64encode("{0}:{1}".format(AUTH_DATA["username"], GIST_TOKEN))
-        request = urllib2.Request(self.import_url)
-        request.add_header("Authorization", "Basic {0}".format(b64str))
-        request.get_method = lambda: request_method
-        response = urllib2.urlopen(request, cafile=CERTIF_FILE)
-
-    def store_snippet(self):
-        """Store snippet content on disk."""
-        self.content_file = r"{}".format(
-            os.path.join(self.snippet_folder, self.description + ".cpio")
-        )
-        self.content_file = self.content_file.replace("\\", "/")
-        with open(self.content_file, "wb") as snippet_f:
-            snippet_f.write(self.content)
-
-    def extract_data(self):
-        """Extract gist data from gist url response."""
-        self.gist_data = json.loads(self.response.read())
-        self.description = self.gist_data["description"]
-        self.content = utils.decode_zlib_b64(self.gist_data["files"]["gist"]["content"])
-
-    def is_link_valid(self, url):
-        """Check if link imported from clipboard is valid and points to a gist.
-
-        Args:
-            url (str): String imported from clipboard.
-
-        Returns:
-            [bool] : True or False and set the instance variable of imported link.
-        """
-        if not url:
-            hou.ui.displayMessage("Clipboard is empty")
-            return False
-        if "https://" not in url:
-            hou.ui.displayMessage("Clipboard content not a url link.")
-            return False
-        try:
-            request = urllib2.Request(url)
-            request.add_header("User-Agent", "Magic Browser")
-            response = urllib2.urlopen(request, cafile=CERTIF_FILE)
-        except urllib2.HTTPError:
-            hou.ui.displayMessage(
-                "Url link is not valid or encountered a HTTP error. Please try again."
-            )
-            return False
-
-        if response.getcode() >= 400:
-            hou.ui.displayMessage("Url server issue")
-            return False
-        response_url = response.geturl()
-        self.import_url = response_url
-        if "github.com/gists" not in response_url:
-            hou.ui.displayMessage("Url not pointing to a snippet file")
-            return False
-        self.response = response
-        return True
-
-
 class Snippet(object):
     def __init__(self):
         # super(Snippet, self).__init__()
@@ -333,6 +146,177 @@ class Snippet(object):
         )
 
 
+class GitTransfer(object):
+    """Send snippet through Gist."""
+
+    def __init__(self, **kwargs):
+        self.gh_api_url = "https://api.github.com"
+        self.gist_api_url = self.gh_api_url + "/gists"
+        self.snippet_node = None
+        self.snippet_name = None
+        self.username = kwargs.pop("username", "default")
+        self.public = True  # Leaving public gist by default
+        self.gist_data = None
+        self.fd = None
+        self.content_file = None
+        self.content = None
+        self.created_url = None
+        self.snippet_folder = None
+        self.import_url = None
+        self.response = None
+        self.description = None
+
+    def send_snippet(self, snippet_node):
+        """Gather all the different processes to send serialized node to gist."""
+        self.snippet_node = snippet_node
+        self.create_content(self.snippet_node)
+        self.create_gist_data(self.username, self.snippet_name, self.content)
+        self.gist_request(self.gist_data)
+        self.string_to_clipboard(self.created_url)
+        os.close(self.fd)
+        os.remove(self.content_file)
+
+    def create_content(self, snippet):
+        """Save serialized item to temporary file.
+
+        Args:
+            snippet (hou.node): Snippet node to serialize.
+        """
+        self.snippet_name = snippet.name()
+        self.fd, self.content_file = tempfile.mkstemp(suffix=".cpio")
+        snippet.saveItemsToFile(snippet.children(), self.content_file, False)
+
+        with open(self.content_file, "rb") as content_file:
+            self.content = content_file.read()
+
+    def create_gist_data(self, username, snippet_name, content):
+        """Format serialized node data to fit gist requirements.
+
+        Args:
+            username (str): Sender's username.
+            snippet_name (str): Name of snippet to send.
+            content (str): Serialized node data.
+        """
+        self.description = utils.create_file_name(snippet_name, username)
+        self.content = utils.encode_zlib_b64(content)
+        self.gist_data = utils.format_gist_data(
+            self.description, self.public, self.content
+        )
+
+    def gist_request(self, payload):
+        """Make request through github's gist api to store the snippet.
+
+        Args:
+            payload (str): Request data payload.
+        """
+        if not payload:
+            return
+
+        request = urllib2.Request(self.gist_api_url, data=payload)
+        b64str = base64.b64encode("{0}:{1}".format(AUTH_DATA["username"], GIST_TOKEN))
+        request.add_header("Authorization", "Basic {0}".format(b64str))
+        response = urllib2.urlopen(request, cafile=CERTIF_FILE)
+
+        if response.getcode() >= 400:
+            hou.ui.displayMessage("Could not connect to server")
+            return
+        response_content = response.read()
+        response_dict = json.loads(response_content)
+        url = response_dict["url"]
+        url = utils.shorten_url(url)
+        self.created_url = url
+
+    def string_to_clipboard(self, input_string):
+        """Use houdini method to send generated snippet's url to cliboard.
+
+        Args:
+            input_string (str): String to copy to clipboard. Would be use for snippet's url here.
+        """
+        hou.ui.copyTextToClipboard(input_string)
+
+    def import_snippet(self, **kwargs):
+        """Method gathering all the different processes to import gist url in Houdini."""
+        self.import_url = kwargs.pop("clipboard_string", None)
+        self.snippet_folder = kwargs.pop("snippet_folder", None)
+        if not self.is_link_valid(self.import_url):
+            return
+        self.extract_data()
+        self.store_snippet()
+        self.delete_snippet()
+        self.create_import_network(self.content_file)
+
+    def is_link_valid(self, url):
+        """Check if link imported from clipboard is valid and points to a gist.
+
+        Args:
+            url (str): String imported from clipboard.
+
+        Returns:
+            bool: True or False and set the instance variable of imported link.
+        """
+        if not url:
+            hou.ui.displayMessage("Clipboard is empty")
+            return False
+        if "https://" not in url:
+            hou.ui.displayMessage("Clipboard content not a url link.")
+            return False
+        try:
+            request = urllib2.Request(url)
+            request.add_header("User-Agent", "Magic Browser")
+            response = urllib2.urlopen(request, cafile=CERTIF_FILE)
+        except urllib2.HTTPError:
+            hou.ui.displayMessage(
+                "Url link is not valid or encountered a HTTP error. Please try again."
+            )
+            return False
+
+        if response.getcode() >= 400:
+            hou.ui.displayMessage("Url server issue")
+            return False
+        response_url = response.geturl()
+        self.import_url = response_url
+        if "github.com/gists" not in response_url:
+            hou.ui.displayMessage("Url not pointing to a snippet file")
+            return False
+        self.response = response
+        return True
+
+    def extract_data(self):
+        """Extract gist data from gist url response."""
+        self.gist_data = json.loads(self.response.read())
+        self.description = self.gist_data["description"]
+        self.content = utils.decode_zlib_b64(self.gist_data["files"]["gist"]["content"])
+
+    def store_snippet(self):
+        """Store snippet content on disk."""
+        self.content_file = r"{}".format(
+            os.path.join(self.snippet_folder, self.description + ".cpio")
+        )
+        self.content_file = self.content_file.replace("\\", "/")
+        with open(self.content_file, "wb") as snippet_f:
+            snippet_f.write(self.content)
+
+    def delete_snippet(self):
+        """Delete imported gist from gist repo."""
+        request_method = "DELETE"
+        b64str = base64.b64encode("{0}:{1}".format(AUTH_DATA["username"], GIST_TOKEN))
+        request = urllib2.Request(self.import_url)
+        request.add_header("Authorization", "Basic {0}".format(b64str))
+        request.get_method = lambda: request_method
+        response = urllib2.urlopen(request, cafile=CERTIF_FILE)
+
+    def create_import_network(self, snippet_file):
+        """Create Snippet network and loads gist content to it."""
+        obj_context = hou.node("/obj")
+        snippet_name = os.path.basename(snippet_file)
+        snippet_name = str(os.path.splitext(snippet_name)[0].split(SEP)[0])
+        snippet_subnet = obj_context.createNode("subnet", node_name=snippet_name)
+        snippet_subnet.setColor(hou.Color(0, 0, 0))
+        if HOU_VER >= 16:
+            snippet_subnet.setUserData("nodeshape", "wave")
+        snippet_subnet.loadItemsFromFile(snippet_file)
+
+
 class SnippetTreeCore(object):
     def __init__(self):
         pass
@@ -354,3 +338,20 @@ class SnippetTreeCore(object):
             snippet_list.append(infos)
 
         return snippet_list
+
+
+class LocalTransfer(object):
+    """Class left blank for local transfer.
+
+    Args:
+        object (obj): object.
+    """
+
+    def send_snippet(self):
+        """Send snippet through local network."""
+        pass
+
+    def get_snippet(self):
+        """Get snippet from local network."""
+        pass
+

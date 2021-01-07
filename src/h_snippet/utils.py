@@ -41,8 +41,8 @@ def check_internet():
         [bool]: True or False depending on internet access.
     """
     os_name = platform.system().lower()
-    param_attempt = "-n" if platform.system().lower() == "windows" else "-c"
-    param_timeout = "-w" if platform.system().lower() == "windows" else "-t"
+    param_attempt = "-n" if os_name == "windows" else "-c"
+    param_timeout = "-w" if os_name == "windows" else "-t"
     cmd = [
         "ping",
         param_attempt,
