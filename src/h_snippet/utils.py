@@ -9,28 +9,34 @@ import subprocess
 import sys
 import urllib
 
-import hou
 import urllib2
 
-h_snippet = os.path.dirname(__file__)
-src = os.path.dirname(h_snippet)
-h_snippet_repo = os.path.dirname(src)
-libs = os.path.join(h_snippet_repo, "libs")
 
-if libs not in sys.path:
-    sys.path.append(libs)
+def append_external_libs():
+    h_snippet = os.path.dirname(__file__)
+    src = os.path.dirname(h_snippet)
+    h_snippet_repo = os.path.dirname(src)
+    libs = os.path.join(h_snippet_repo, "libs")
+    if libs not in sys.path:
+        sys.path.append(libs)
 
-import certifi
 
-program = os.path.dirname(__file__)
-auth_file = os.path.join(program, "auth.json")
+append_external_libs()
 
-with open(auth_file, "r") as auth_file:
-    AUTH_DATA = json.load(auth_file)
+import certifi  # pylint: disable=wrong-import-position
 
+
+def get_auth_data():
+    program = os.path.dirname(__file__)
+    auth_file = os.path.join(program, "auth.json")
+
+    with open(auth_file, "r") as auth_file:
+        return json.load(auth_file)
+
+
+AUTH_DATA = get_auth_data()
 CUTTLY_TOKEN = AUTH_DATA["cuttly_token"]
 SEP = r"$#!--%"
-HOU_VER = hou.applicationVersion()[0]
 CERTIF_FILE = certifi.where()
 
 
@@ -43,14 +49,7 @@ def check_internet():
     os_name = platform.system().lower()
     param_attempt = "-n" if os_name == "windows" else "-c"
     param_timeout = "-w" if os_name == "windows" else "-t"
-    cmd = [
-        "ping",
-        param_attempt,
-        "1",
-        "8.8.8.8",
-        param_timeout,
-        "1",
-    ]
+    cmd = ["ping", param_attempt, "1", "8.8.8.8", param_timeout, "1"]
     response = subprocess.call(cmd, shell=False)
 
     return response == 0
@@ -68,35 +67,6 @@ def get_home():
         return home
     if not home:
         return os.path.expanduser("~")
-
-
-def is_snippet(selection):
-    """Check if selected node is a snippet network.
-
-    Args:
-        selection (obj): Houdini node single selection. Expecting utils.get_selection(0).
-
-    Returns:
-        [bool]: True or False if selection is a snippet network.
-    """
-    if not selection:
-        return False
-    snippet_verif = hou.node(selection.path() + "/snippet_verification")
-    if "snp_" not in selection.name() or not snippet_verif:
-        return False
-    return True
-
-
-def get_selection(single_or_multiple):
-    """Return node selection, single or multiple.
-
-    Args:
-        single_or_multiple (int): Selection mode. 0 if single, 1 if multiple. Safety check.
-    """
-    selection = hou.selectedNodes()
-    if single_or_multiple == 0 and selection:
-        selection = hou.selectedNodes()[0]
-    return selection
 
 
 def create_file_name(snippet_name, username):
