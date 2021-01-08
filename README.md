@@ -41,5 +41,6 @@ Received snippet can be access through the Library tab, you can either import th
 ## 3. Notes
 
 On startup the tool will ask for a username and create a ".hou_snippet" folder in your user folder to store your username and received snippets.
+The snippet are uploaded to github gist as .json files.
 There is a Github Actions workflow that will scan snippets and delete those that are over two days old. The script is triggered every 6th hour, make sure to import the snippet before that time
-or it will be automatically deleted
+as it will be automatically deleted.
