@@ -2,19 +2,24 @@
 
 ## Installation
 
+
+
 ```
 import sys
 import hou
 
 path = r"D:\GIT\h_snippet\src"
 
+# example: 
+# path = r"C:\Users\Matthieu\Downloads\hou_snippet-main\src"
+
 if path not in sys.path:
     sys.path.append(path)
 
-import h_snippet.ui
+import hou_snippet.ui
 
 
-h_snippet.ui.main()
+hou_snippet.ui.main()
 ```
 
 ## How to use
