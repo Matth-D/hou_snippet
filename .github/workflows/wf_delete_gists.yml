@@ -20,4 +20,4 @@ jobs:
       run: python -c "import sys; print(sys.version)"
 
     - name: Run cleanup script
-      run: python -m ./bin/gist_cleanup.py
+      run: python ./bin/gist_cleanup.py
