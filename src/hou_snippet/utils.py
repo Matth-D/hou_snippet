@@ -13,10 +13,10 @@ import urllib2
 
 
 def append_external_libs():
-    h_snippet = os.path.dirname(__file__)
-    src = os.path.dirname(h_snippet)
-    h_snippet_repo = os.path.dirname(src)
-    libs = os.path.join(h_snippet_repo, "libs")
+    hou_snippet = os.path.dirname(__file__)
+    src = os.path.dirname(hou_snippet)
+    hou_snippet_repo = os.path.dirname(src)
+    libs = os.path.join(hou_snippet_repo, "libs")
     if libs not in sys.path:
         sys.path.append(libs)
 

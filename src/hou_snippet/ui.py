@@ -1,4 +1,4 @@
-"""H_Snippet UI"""
+"""Hou_Snippet UI"""
 
 import os
 

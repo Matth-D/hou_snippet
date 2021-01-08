@@ -1,4 +1,4 @@
-"""H_snippet Core module."""
+"""Hou_snippet Core module."""
 
 import base64
 import json
@@ -20,10 +20,10 @@ class Snippet(object):
 
     def __init__(self):
         # super(Snippet, self).__init__()
-        self.h_snippet_path = os.path.join(HOME, ".h_snippet")
-        self.user_file_path = os.path.join(self.h_snippet_path, "user.json")
+        self.hou_snippet_path = os.path.join(HOME, ".hou_snippet")
+        self.user_file_path = os.path.join(self.hou_snippet_path, "user.json")
         self.snippet_received_path = os.path.join(
-            self.h_snippet_path, "snippets_received"
+            self.hou_snippet_path, "snippets_received"
         )
         self.username = None
         self.local_transfer_switch = None
@@ -34,9 +34,9 @@ class Snippet(object):
         self.initialize_transfer()
 
     def initialize_user_folder(self):
-        """Initialize .h_snippet folder and user files necessary for further use of the tool."""
-        if not os.path.exists(self.h_snippet_path):
-            os.mkdir(self.h_snippet_path)
+        """Initialize .hou_snippet folder and user files necessary for further use of the tool."""
+        if not os.path.exists(self.hou_snippet_path):
+            os.mkdir(self.hou_snippet_path)
 
         if not os.path.exists(self.snippet_received_path):
             os.mkdir(self.snippet_received_path)
@@ -122,7 +122,7 @@ class Snippet(object):
         if not selection or not utils.is_snippet(selection):
             hou.ui.displayMessage(
                 "Please select a snippet node network."
-                " Must be created with the H_Snippet shelf tool."
+                " Must be created with the Hou_Snippet shelf tool."
             )
             return
 
@@ -331,7 +331,7 @@ class SnippetTreeCore(object):
 
         if not snippet_folder_path:
             hou.ui.displayMessage(
-                "Couldn't find snippet folder, should be located in user/.h_snippet/snippet_received"
+                "Couldn't find snippet folder, should be located in user/.hou_snippet/snippet_received"
             )
             return
         for snippet in os.listdir(snippet_folder_path):
