@@ -3,7 +3,7 @@
 This is a tool for Houdini that allows to generate link to share snippets of nodes.
 ## 1. Installation
 
-Git clone the repository on your system or, on the repository GitHub page, click the green button Code and download the repository as a zip file.
+Git clone the repository to your system or, on the repository GitHub page, click the green button Code and download the repository as a zip file.
 Unzip and store on your system.
 In Houdini, create a new shelf tool. In the script tab copy the code below:
 
@@ -26,7 +26,7 @@ hou_snippet.ui.main()
 ```
 
 Replace the path to the src folder on your machine next to the path variable as shown.
-The tool should be now ready to use. 
+The tool should now be ready to use.
 
 ## 2. How to use
 
