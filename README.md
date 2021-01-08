@@ -8,7 +8,7 @@
 import sys
 import hou
 
-path = r"D:\GIT\h_snippet\src"
+path = r"insert path to src folder here"
 
 # example: 
 # path = r"C:\Users\Matthieu\Downloads\hou_snippet-main\src"
