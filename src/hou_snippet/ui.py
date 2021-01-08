@@ -47,6 +47,9 @@ class HSnippet(QtWidgets.QDialog):
             self.import_snippet_btn = QtWidgets.QPushButton(
                 "Import Snippet from Clipboard", self
             )
+            self.create_snippet_btn.setMaximumWidth(self.app_size[0] * 0.55)
+            self.send_snippet_btn.setMaximumWidth(self.app_size[0] * 0.55)
+            self.import_snippet_btn.setMaximumWidth(self.app_size[0] * 0.55)
         self.no_internet_label = QtWidgets.QLabel(
             "Please connect your machine to the internet and restart Hou_snippet."
         )
@@ -92,10 +95,6 @@ class HSnippet(QtWidgets.QDialog):
                 self.snippet.send_snippet_to_clipboard
             )
             self.import_snippet_btn.clicked.connect(self.send_clipboard_to_snippet)
-
-            self.create_snippet_btn.setMaximumWidth(self.app_size[0] * 0.55)
-            self.send_snippet_btn.setMaximumWidth(self.app_size[0] * 0.55)
-            self.import_snippet_btn.setMaximumWidth(self.app_size[0] * 0.55)
 
         self.library_import_btn.clicked.connect(self.create_library_snippet)
         self.library_delete_btn.clicked.connect(self.remove_library_snippet)
