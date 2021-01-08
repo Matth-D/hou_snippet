@@ -4,7 +4,7 @@
 
 
 
-```
+```python
 import sys
 import hou
 
