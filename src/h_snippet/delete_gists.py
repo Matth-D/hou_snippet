@@ -5,9 +5,7 @@ import os
 import sys
 import urllib
 
-import urllib2
-
-from . import utils
+from . import utils, utils_hou
 
 GIST_TOKEN = utils.decode_zlib_b64(utils.AUTH_DATA["gist_token"])
 
