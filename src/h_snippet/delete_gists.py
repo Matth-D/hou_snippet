@@ -1,16 +1,15 @@
 import base64
 import datetime
 import json
-import os
-import sys
-import urllib
 
-from . import utils, utils_hou
+import urllib2
+
+from . import utils
 
 GIST_TOKEN = utils.decode_zlib_b64(utils.AUTH_DATA["gist_token"])
 
 
-def delete_all_gists():
+def run():
     """Scan all gists and delete ones that are over 2 days old.
     """
     gists_url = "https://api.github.com/users/{}/gists".format(
@@ -42,6 +41,3 @@ def delete_all_gists():
         request.add_header("Authorization", "Basic {0}".format(b64str))
         request.get_method = lambda: request_method
         response = urllib2.urlopen(request, cafile=utils.CERTIF_FILE)
-
-
-delete_all_gists()
