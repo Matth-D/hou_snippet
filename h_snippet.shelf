@@ -19,4 +19,8 @@ import h_snippet.ui
 
 h_snippet.ui.main()]]></script>
   </tool>
+
+  <toolshelf name="H_Snippet" label="Houdini Snippet">
+    <memberTool name="Snippet_tool"/>
+  </toolshelf>
 </shelfDocument>
