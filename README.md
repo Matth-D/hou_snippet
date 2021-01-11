@@ -5,7 +5,7 @@ This is a tool for Houdini that allows to generate link to share snippets of nod
 
 Git clone the repository to your system or, on the repository GitHub page, click the green button Code and download the repository as a zip file.
 Unzip and store on your system.
-In Houdini, create a new shelf tool. In the script tab copy the code below:
+In Houdini, create a new shelf tool. Right click on it and then select "Edit Tool..". In the script tab copy the code below:
 
 ```python
 import sys
