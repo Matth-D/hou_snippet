@@ -69,7 +69,7 @@ class Snippet(object):
 
     def create_snippet_network(self):
         """Create snippet subnetwork at /obj level for user selection."""
-        selection = utils.get_selection(1)
+        selection = utils_hou.get_selection(1)
 
         if not selection:
             hou.ui.displayMessage("Please select nodes to send.")
@@ -117,9 +117,9 @@ class Snippet(object):
 
     def send_snippet_to_clipboard(self):
         """Connect core methods to send snippet to clipboard."""
-        selection = utils.get_selection(0)
+        selection = utils_hou.get_selection(0)
 
-        if not selection or not utils.is_snippet(selection):
+        if not selection or not utils_hou.is_snippet(selection):
             hou.ui.displayMessage(
                 "Please select a snippet node network."
                 " Must be created with the Hou_Snippet shelf tool."
