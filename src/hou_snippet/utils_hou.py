@@ -30,6 +30,6 @@ def get_selection(single_or_multiple):
         obj: Houini selection object.
     """
     selection = hou.selectedNodes()
-    if single_or_multiple == -1 and selection:
-        selection = hou.selectedNodes()[-1]
+    if single_or_multiple == 0 and selection:
+        selection = hou.selectedNodes()[0]
     return selection

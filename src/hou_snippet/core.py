@@ -118,7 +118,6 @@ class Snippet(object):
     def send_snippet_to_clipboard(self):
         """Connect core methods to send snippet to clipboard."""
         selection = utils_hou.get_selection(0)
-
         if not selection or not utils_hou.is_snippet(selection):
             hou.ui.displayMessage(
                 "Please select a snippet node network."
