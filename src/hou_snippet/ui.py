@@ -137,6 +137,8 @@ class HSnippet(QtWidgets.QDialog):
         """Get clipboard content and send it to snippet."""
         clipboard = QtGui.QGuiApplication.clipboard().text()
         self.snippet.import_snippet_from_clipboard(str(clipboard))
+        self.snippet_tree.clear()
+        self.snippet_tree.fill_tree()
 
     def center_window(self):
         """Centers window on screen."""

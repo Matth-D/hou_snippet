@@ -88,10 +88,10 @@ class Snippet(object):
             return
 
         snippet_subnet = obj_context.createNode("subnet", node_name=snippet_name)
-        snippet_subnet.setColor(hou.Color(0, 0, 0))
+        snippet_subnet.setColor(hou.Color(0.97, 0.78, 0.26))
 
         if utils_hou.HOU_VER >= 16:
-            snippet_subnet.setUserData("nodeshape", "wave")
+            snippet_subnet.setUserData("nodeshape", "circle")
 
         destination_node = snippet_subnet
 
@@ -305,9 +305,9 @@ class GitTransfer(object):
         snippet_name = os.path.basename(snippet_file)
         snippet_name = str(os.path.splitext(snippet_name)[0].split(utils.SEP)[0])
         snippet_subnet = obj_context.createNode("subnet", node_name=snippet_name)
-        snippet_subnet.setColor(hou.Color(0, 0, 0))
+        snippet_subnet.setColor(hou.Color(0.97, 0.78, 0.26))
         if utils_hou.HOU_VER >= 16:
-            snippet_subnet.setUserData("nodeshape", "wave")
+            snippet_subnet.setUserData("nodeshape", "circle")
         snippet_subnet.loadItemsFromFile(snippet_file)
 
 
