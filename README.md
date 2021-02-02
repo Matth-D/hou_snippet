@@ -2,7 +2,7 @@
 
 This is a tool for Houdini that allows to generate link to share snippets of nodes between users.
 It allows to quickly generate snippet network of the nodes you wish to transfer, serialize them and store them on github gists. 
-By sending the generated link or copying a link sent by another user you can serialize/deserialize the nodes from/to your houdini sessions. Allowing for an easy transfer or nodes/scenes between users.
+By sending the generated link or copying a link sent by another user you can serialize/deserialize the nodes from/to your houdini sessions. Allowing for an easy transfer of nodes/scenes between users.
 ## 1. Installation
 
 Git clone the repository to your system or, on the repository GitHub page, click the green button Code and download the repository as a zip file.
@@ -44,5 +44,5 @@ Received snippet can be access through the Library tab, you can either import th
 
 On startup the tool will ask for a username and create a ".hou_snippet" folder in your user folder to store your username and received snippets.
 The snippet are uploaded to github gist as .json files.
-There is a Github Actions workflow that will scan snippets and delete those that are over two days old. The script is triggered every 6th hour, make sure to import the snippet before that time
+Hou_snippet takes advantage of the Github Actions workflow. It will scan snippets and delete those that are over two days old. The script is triggered every 6th hour, make sure to import the snippet before that time
 as it will be automatically deleted.
