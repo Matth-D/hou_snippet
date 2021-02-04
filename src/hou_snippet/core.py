@@ -89,6 +89,7 @@ class Snippet(object):
 
         snippet_subnet = obj_context.createNode("subnet", node_name=snippet_name)
         snippet_subnet.setColor(hou.Color(0.97, 0.78, 0.26))
+        snippet_subnet.setDisplayFlag(False)
 
         if utils_hou.HOU_VER >= 16:
             snippet_subnet.setUserData("nodeshape", "circle")
